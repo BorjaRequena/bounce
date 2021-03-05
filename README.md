@@ -10,4 +10,4 @@ In this repository you can find the source code and a set of notebooks providing
 ## Install
 
 In order to use the library, you will have to clone this repository with `git clone https://github.com/BorjaRequena/BOUNCE.git` and install it via `pip install bounce`. In order to edit the source code and adapt it to your particular problems, you may install it in editable form with `pip install -e bounce`.
-To perform the installation, you must be in the immediately higher level along the path of the cloned repository. For instance, if the repository is in the directory `~/what/ever/BOUNCE`, go to `~/what/ever/` directory to run the `pip install -e bounce` command.
+{% include note.html content='to perform the installation, you must be in the immediately higher level along the path of the cloned repository. For instance, if the repository is in the directory `~/what/ever/BOUNCE`, go to `~/what/ever/` directory to run the `pip install -e bounce` command.  ' %}
