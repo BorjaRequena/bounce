@@ -4,7 +4,7 @@
 
 In this repository you can find the source code and a set of notebooks providing a thorough example of how to use the library and how to reproduce the figures shown in the paper. 
 
-- The source code can be found in two directories: it is within `bounce` and in `nbs`. Bounce stands for BOUNd CErtification. This project is based on [nbdev](https://github.com/fastai/nbdev), which generates the library from notebooks. These contain complementary explanations of the code with small examples. 
+- The source code can be found in two directories: it is within `bounce` and in `nbs` (see the [docs](https://borjarequena.github.io/BOUNCE/)). Bounce stands for BOUNd CErtification. This project is based on [nbdev](https://github.com/fastai/nbdev), which generates the library from notebooks. These contain complementary explanations of the code with small examples. 
 - The `examples` directory contains a set of notebooks that conform a tutorial of how to use this library, with extended explanations and examples. The examples contain the source code to reproduce the figures from the paper, which can be plotted in the _04_plots.ipynb_.
 
 ## Install
