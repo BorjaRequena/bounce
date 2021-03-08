@@ -64,7 +64,7 @@ modules = ["environment.py",
            "utils.py",
            "sdp.py"]
 
-doc_url = "https://BorjaRequena.github.io/BOUNCE/"
+doc_url = "https://BorjaRequena.github.io/bounce/"
 
 git_url = "https://github.com/BorjaRequena/BOUNCE/tree/master/"
 

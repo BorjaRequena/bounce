@@ -15,7 +15,7 @@ from bounce.utils import state2int, state2str, contained_constraints, simplify_l
 
 # Cell
 class SDPEnvironment:
-    "Environment for constraint exploration."
+    "Environment for constraint-space exploration."
 
     def __init__(self, N, H, param_profile, reward_criterion="energy_norm", energy_threshold=1e-3):
 

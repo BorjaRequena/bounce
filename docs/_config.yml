@@ -3,7 +3,7 @@ output: web
 topnav_title: bounce
 site_title: bounce
 company_name: Borja Requena
-description: optimization of energy bound computation through reinforcement learning
+description: Certificates of quantum many-body properties assisted by machine learning
 # Set to false to disable KaTeX math
 use_math: true
 # Add Google analytics id if you have one and want to use it here
@@ -58,7 +58,6 @@ defaults:
 
 sidebars:
 - home_sidebar
-permalink: pretty
 
 theme: jekyll-theme-cayman
-baseurl: /BOUNCE/
+baseurl: /bounce/
