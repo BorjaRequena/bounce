@@ -38,7 +38,7 @@ nb_path: "nbs/04_training.ipynb"
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Deep-Q-learning-trainer">Deep Q-learning trainer<a class="anchor-link" href="#Deep-Q-learning-trainer"> </a></h2><p>The <a href="/bounce/training.html#DQNTrainer"><code>DQNTrainer</code></a> handles the training of the deep reinforcement learning agent.</p>
+<h2 id="Deep-Q-learning-trainer">Deep Q-learning trainer<a class="anchor-link" href="#Deep-Q-learning-trainer"> </a></h2><p>The <a href="/BOUNCE/training.html#DQNTrainer"><code>DQNTrainer</code></a> handles the training of the deep reinforcement learning agent.</p>
 
 </div>
 </div>
@@ -54,7 +54,7 @@ nb_path: "nbs/04_training.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="DQNTrainer" class="doc_header"><code>class</code> <code>DQNTrainer</code><a href="https://github.com/BorjaRequena/bounce/tree/master/bounce/training.py#L24" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>DQNTrainer</code>(<strong><code>N</code></strong>, <strong><code>H</code></strong>, <strong><code>budget_profile</code></strong>, <strong><code>reward_fun</code></strong>=<em><code>'energy_norm'</code></em>, <strong><code>n_agents</code></strong>=<em><code>1</code></em>, <strong><code>models</code></strong>=<em><code>None</code></em>, <strong><code>arch</code></strong>=<em><code>DQN</code></em>, <strong><code>n_jobs</code></strong>=<em><code>1</code></em>, <strong><code>learning_rate</code></strong>=<em><code>0.001</code></em>, <strong><code>criterion</code></strong>=<em><code>None</code></em>, <strong><code>optimizer</code></strong>=<em><code>None</code></em>, <strong><code>batch_size</code></strong>=<em><code>120</code></em>, <strong><code>target_update</code></strong>=<em><code>5</code></em>, <strong><code>gamma</code></strong>=<em><code>0.85</code></em>, <strong><code>eps_0</code></strong>=<em><code>1</code></em>, <strong><code>eps_decay</code></strong>=<em><code>0.999</code></em>, <strong><code>eps_min</code></strong>=<em><code>0.1</code></em>)</p>
+<h2 id="DQNTrainer" class="doc_header"><code>class</code> <code>DQNTrainer</code><a href="https://github.com/BorjaRequena/BOUNCE/tree/master/bounce/training.py#L24" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>DQNTrainer</code>(<strong><code>N</code></strong>, <strong><code>H</code></strong>, <strong><code>budget_profile</code></strong>, <strong><code>reward_fun</code></strong>=<em><code>'energy_norm'</code></em>, <strong><code>n_agents</code></strong>=<em><code>1</code></em>, <strong><code>models</code></strong>=<em><code>None</code></em>, <strong><code>arch</code></strong>=<em><code>DQN</code></em>, <strong><code>n_jobs</code></strong>=<em><code>1</code></em>, <strong><code>learning_rate</code></strong>=<em><code>0.001</code></em>, <strong><code>criterion</code></strong>=<em><code>None</code></em>, <strong><code>optimizer</code></strong>=<em><code>None</code></em>, <strong><code>batch_size</code></strong>=<em><code>120</code></em>, <strong><code>target_update</code></strong>=<em><code>5</code></em>, <strong><code>gamma</code></strong>=<em><code>0.85</code></em>, <strong><code>eps_0</code></strong>=<em><code>1</code></em>, <strong><code>eps_decay</code></strong>=<em><code>0.999</code></em>, <strong><code>eps_min</code></strong>=<em><code>0.1</code></em>)</p>
 </blockquote>
 <p>Trainer for DQN agents</p>
 
@@ -77,7 +77,7 @@ nb_path: "nbs/04_training.ipynb"
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>The <a href="/bounce/training.html#DQNTrainer"><code>DQNTrainer</code></a> depends entirely on the <a href="/bounce/training.html#train_agent"><code>train_agent</code></a> function. This, in itself, relies on several inner functionalities show below.</p>
+<p>The <a href="/BOUNCE/training.html#DQNTrainer"><code>DQNTrainer</code></a> depends entirely on the <a href="/BOUNCE/training.html#train_agent"><code>train_agent</code></a> function. This, in itself, relies on several inner functionalities show below.</p>
 
 </div>
 </div>
@@ -93,7 +93,7 @@ nb_path: "nbs/04_training.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="train_agent" class="doc_header"><code>train_agent</code><a href="https://github.com/BorjaRequena/bounce/tree/master/bounce/training.py#L108" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>train_agent</code>(<strong><code>env</code></strong>, <strong><code>agent</code></strong>, <strong><code>episodes</code></strong>, <strong><code>time_steps</code></strong>=<em><code>20</code></em>, <strong><code>opt</code></strong>=<em><code>None</code></em>, <strong><code>best_ref</code></strong>=<em><code>None</code></em>, <strong><code>evaluate</code></strong>=<em><code>True</code></em>, <strong><code>train_id</code></strong>=<em><code>None</code></em>, <strong><code>ckp</code></strong>=<em><code>100</code></em>, <strong><code>save</code></strong>=<em><code>True</code></em>, <strong><code>break_opt</code></strong>=<em><code>False</code></em>)</p>
+<h4 id="train_agent" class="doc_header"><code>train_agent</code><a href="https://github.com/BorjaRequena/BOUNCE/tree/master/bounce/training.py#L108" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>train_agent</code>(<strong><code>env</code></strong>, <strong><code>agent</code></strong>, <strong><code>episodes</code></strong>, <strong><code>time_steps</code></strong>=<em><code>20</code></em>, <strong><code>opt</code></strong>=<em><code>None</code></em>, <strong><code>best_ref</code></strong>=<em><code>None</code></em>, <strong><code>evaluate</code></strong>=<em><code>True</code></em>, <strong><code>train_id</code></strong>=<em><code>None</code></em>, <strong><code>ckp</code></strong>=<em><code>100</code></em>, <strong><code>save</code></strong>=<em><code>True</code></em>, <strong><code>break_opt</code></strong>=<em><code>False</code></em>)</p>
 </blockquote>
 <p>Trains an agent given an environment.</p>
 
@@ -118,7 +118,7 @@ nb_path: "nbs/04_training.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="step" class="doc_header"><code>step</code><a href="https://github.com/BorjaRequena/bounce/tree/master/bounce/training.py#L176" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>step</code>(<strong><code>state</code></strong>, <strong><code>agent</code></strong>, <strong><code>environment</code></strong>, <strong><code>episode</code></strong>=<em><code>1</code></em>)</p>
+<h4 id="step" class="doc_header"><code>step</code><a href="https://github.com/BorjaRequena/BOUNCE/tree/master/bounce/training.py#L176" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>step</code>(<strong><code>state</code></strong>, <strong><code>agent</code></strong>, <strong><code>environment</code></strong>, <strong><code>episode</code></strong>=<em><code>1</code></em>)</p>
 </blockquote>
 <p>Take a step forward from state following the agent's policy</p>
 
@@ -143,7 +143,7 @@ nb_path: "nbs/04_training.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="get_reward" class="doc_header"><code>get_reward</code><a href="https://github.com/BorjaRequena/bounce/tree/master/bounce/training.py#L182" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>get_reward</code>(<strong><code>environment</code></strong>, <strong><code>energy</code></strong>, <strong><code>params</code></strong>, <strong><code>best_ref</code></strong>=<em><code>None</code></em>)</p>
+<h4 id="get_reward" class="doc_header"><code>get_reward</code><a href="https://github.com/BorjaRequena/BOUNCE/tree/master/bounce/training.py#L182" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>get_reward</code>(<strong><code>environment</code></strong>, <strong><code>energy</code></strong>, <strong><code>params</code></strong>, <strong><code>best_ref</code></strong>=<em><code>None</code></em>)</p>
 </blockquote>
 <p>Returns the reward according to the environment</p>
 
@@ -168,7 +168,7 @@ nb_path: "nbs/04_training.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="evaluate_agent" class="doc_header"><code>evaluate_agent</code><a href="https://github.com/BorjaRequena/bounce/tree/master/bounce/training.py#L186" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>evaluate_agent</code>(<strong><code>agent</code></strong>, <strong><code>environment</code></strong>, <strong><code>time_steps</code></strong>, <strong><code>episode</code></strong>=<em><code>0</code></em>)</p>
+<h4 id="evaluate_agent" class="doc_header"><code>evaluate_agent</code><a href="https://github.com/BorjaRequena/BOUNCE/tree/master/bounce/training.py#L186" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>evaluate_agent</code>(<strong><code>agent</code></strong>, <strong><code>environment</code></strong>, <strong><code>time_steps</code></strong>, <strong><code>episode</code></strong>=<em><code>0</code></em>)</p>
 </blockquote>
 <p>Evaluates the agent in deterministic policy. Returns final reward, energy and parameters</p>
 
@@ -193,7 +193,7 @@ nb_path: "nbs/04_training.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="check_optim" class="doc_header"><code>check_optim</code><a href="https://github.com/BorjaRequena/bounce/tree/master/bounce/training.py#L200" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>check_optim</code>(<strong><code>opt</code></strong>, <strong><code>E</code></strong>, <strong><code>P</code></strong>)</p>
+<h4 id="check_optim" class="doc_header"><code>check_optim</code><a href="https://github.com/BorjaRequena/BOUNCE/tree/master/bounce/training.py#L200" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>check_optim</code>(<strong><code>opt</code></strong>, <strong><code>E</code></strong>, <strong><code>P</code></strong>)</p>
 </blockquote>
 <p>When we know the true optimal state first-hand, we can check whether their energies and parameters match</p>
 
@@ -361,7 +361,7 @@ nb_path: "nbs/04_training.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="explore_brfs" class="doc_header"><code>explore_brfs</code><a href="https://github.com/BorjaRequena/bounce/tree/master/bounce/training.py#L205" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>explore_brfs</code>(<strong><code>env</code></strong>, <strong><code>agent</code></strong>, <strong><code>max_states</code></strong>, <strong><code>opt</code></strong>=<em><code>None</code></em>, <strong><code>best_ref</code></strong>=<em><code>None</code></em>)</p>
+<h4 id="explore_brfs" class="doc_header"><code>explore_brfs</code><a href="https://github.com/BorjaRequena/BOUNCE/tree/master/bounce/training.py#L205" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>explore_brfs</code>(<strong><code>env</code></strong>, <strong><code>agent</code></strong>, <strong><code>max_states</code></strong>, <strong><code>opt</code></strong>=<em><code>None</code></em>, <strong><code>best_ref</code></strong>=<em><code>None</code></em>)</p>
 </blockquote>
 <p>Space exploration with Breadth First Search (BrFS)</p>
 
@@ -386,7 +386,7 @@ nb_path: "nbs/04_training.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="BrFSTrainer" class="doc_header"><code>class</code> <code>BrFSTrainer</code><a href="https://github.com/BorjaRequena/bounce/tree/master/bounce/training.py#L235" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>BrFSTrainer</code>(<strong><code>N</code></strong>, <strong><code>H</code></strong>, <strong><code>budget_profile</code></strong>, <strong><code>reward_fun</code></strong>=<em><code>'energy_norm'</code></em>, <strong><code>n_agents</code></strong>=<em><code>1</code></em>, <strong><code>n_jobs</code></strong>=<em><code>1</code></em>)</p>
+<h2 id="BrFSTrainer" class="doc_header"><code>class</code> <code>BrFSTrainer</code><a href="https://github.com/BorjaRequena/BOUNCE/tree/master/bounce/training.py#L235" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>BrFSTrainer</code>(<strong><code>N</code></strong>, <strong><code>H</code></strong>, <strong><code>budget_profile</code></strong>, <strong><code>reward_fun</code></strong>=<em><code>'energy_norm'</code></em>, <strong><code>n_agents</code></strong>=<em><code>1</code></em>, <strong><code>n_jobs</code></strong>=<em><code>1</code></em>)</p>
 </blockquote>
 
 </div>
@@ -493,7 +493,7 @@ nb_path: "nbs/04_training.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="explore_mc" class="doc_header"><code>explore_mc</code><a href="https://github.com/BorjaRequena/bounce/tree/master/bounce/training.py#L273" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>explore_mc</code>(<strong><code>env</code></strong>, <strong><code>agent</code></strong>, <strong><code>max_states</code></strong>, <strong><code>opt</code></strong>=<em><code>None</code></em>, <strong><code>best_ref</code></strong>=<em><code>None</code></em>, <strong><code>ckp</code></strong>=<em><code>200</code></em>)</p>
+<h4 id="explore_mc" class="doc_header"><code>explore_mc</code><a href="https://github.com/BorjaRequena/BOUNCE/tree/master/bounce/training.py#L273" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>explore_mc</code>(<strong><code>env</code></strong>, <strong><code>agent</code></strong>, <strong><code>max_states</code></strong>, <strong><code>opt</code></strong>=<em><code>None</code></em>, <strong><code>best_ref</code></strong>=<em><code>None</code></em>, <strong><code>ckp</code></strong>=<em><code>200</code></em>)</p>
 </blockquote>
 <p>Space exploration with Monte-Carlo (MC)</p>
 
@@ -518,7 +518,7 @@ nb_path: "nbs/04_training.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="MCTrainer" class="doc_header"><code>class</code> <code>MCTrainer</code><a href="https://github.com/BorjaRequena/bounce/tree/master/bounce/training.py#L306" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>MCTrainer</code>(<strong><code>N</code></strong>, <strong><code>H</code></strong>, <strong><code>budget_profile</code></strong>, <strong><code>reward_fun</code></strong>=<em><code>'energy_norm'</code></em>, <strong><code>n_agents</code></strong>=<em><code>1</code></em>, <strong><code>n_jobs</code></strong>=<em><code>1</code></em>, <strong><code>beta</code></strong>=<em><code>0.1</code></em>)</p>
+<h2 id="MCTrainer" class="doc_header"><code>class</code> <code>MCTrainer</code><a href="https://github.com/BorjaRequena/BOUNCE/tree/master/bounce/training.py#L306" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>MCTrainer</code>(<strong><code>N</code></strong>, <strong><code>H</code></strong>, <strong><code>budget_profile</code></strong>, <strong><code>reward_fun</code></strong>=<em><code>'energy_norm'</code></em>, <strong><code>n_agents</code></strong>=<em><code>1</code></em>, <strong><code>n_jobs</code></strong>=<em><code>1</code></em>, <strong><code>beta</code></strong>=<em><code>0.1</code></em>)</p>
 </blockquote>
 
 </div>
