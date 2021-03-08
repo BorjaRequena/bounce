@@ -69,7 +69,8 @@ nb_path: "nbs/03_hamiltonian.ipynb"
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>In the current release we only provide support for 1D problems. The <a href="/BOUNCE/hamiltonian.html#Hamiltonian1D"><code>Hamiltonian1D</code></a> class contains the basic infrastructure to build 1D Hamiltonians with up to 2-body interactions. Spin Hamiltonians can be built based on Pauli operators <code>x</code>, <code>y</code> and <code>z</code>, each corresponding to the respective Pauli matrix, which are already defined in terms of the variables that are used to solve the associated SdPs.</p>
+<p>In the current release we only provide support for 1D problems. The <a href="/BOUNCE/hamiltonian.html#Hamiltonian1D"><code>Hamiltonian1D</code></a> class contains the basic infrastructure to build 1D Hamiltonians with up to 2-body interactions. Spin Hamiltonians can be built based on Pauli operators <code>x</code>, <code>y</code> and <code>z</code>, each corresponding to the respective Pauli matrix, and the identity <code>Id</code>, which are already defined in terms of the variables that are used to solve the associated SdPs.</p>
+<p>All the Hamiltonians must have a <code>to_sdp</code> method, which must output a list of tuples of the form <code>(support, term)</code> indicating the sites on which each Hamiltonian term is acting. The <code>support</code> is a sorted <code>np.array</code>, while the <code>term</code> is made of <code>picos.Constant</code>. Using the pre-defined Pauli operators, the Hamiltonian terms already have the right format. See the source code of <a href="/BOUNCE/hamiltonian.html#XYHamiltonian"><code>XYHamiltonian</code></a> or <a href="/BOUNCE/hamiltonian.html#XXHamiltonian"><code>XXHamiltonian</code></a> for some examples.</p>
 
 </div>
 </div>
