@@ -180,27 +180,6 @@ class SDPEnvironment:
         else:                           err = 0
         return energy, params, err
 
-
-    def _SDP_graph(self, L=None):
-        """SDP speedup for graph states by avoiding matlab queries. L is optional input for generality purposes, does not
-        even need simplified versions, matlab will do with the simplification."""
-        err = self._check_support(3, L=L)
-        if err: return 0, 0, err, 0.
-        else:
-            params = self.get_params() # visits matlab
-            if params > self.param_limit: return params, len(self.L)-1, 2, 0.   # Error for excess of parameters (arbitrary numer of blocks)
-            else:                        return params, len(self.L)-1, err, 1. # SDP values (arbitrary number of blocks)
-
-    def _check_support(self, min_support, L=None):
-        """L is optional input for generality purposes"""
-        self.L = self.matlab_basis[self.state.astype(bool) if L is None else L.astype(bool)]
-        str_layout = '|'.join(map(lambda x: ' '.join([str(x[i]) for i in range(len(x))]), self.L))
-
-        err = 0
-        for constraint in self.agent_basis[min_support-2]:
-            if constraint not in str_layout: err = 1; break
-        return err
-
     def _check_current_limit(self, binary, energy, params, err):
         if not err and params > self.param_limit:
             # Pre-computed parameters are larger than current limit
@@ -248,7 +227,7 @@ class SDPEnvironment:
         return state.reshape(self.state.shape)
 
     def _simplify_constraints(self):
-        '''Simplifies current state removing contained constraints.'''
+        "Simplifies current state removing contained constraints."
         state_simp = deepcopy(self.state)
         state_simp[contained_constraints(state_simp, self.N)] = 0
         return state_simp, state2int(state_simp)
@@ -264,6 +243,7 @@ class SDPEnvironment:
     def _get_memory(self):
         "Reads the corresponding memory file"
         memory_dir = Path("../memories/")
+        memory_dir.mkdir(exist_ok=True)
         if self.H.model == "graph":
             self.memory_path = memory_dir/f"env_memory_{self.H.model}_N{self.N}.pkl"
         elif self.H.model == "xy":

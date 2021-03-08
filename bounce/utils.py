@@ -117,7 +117,7 @@ class CPU_Unpickler(pickle.Unpickler):
 
 # Cell
 def save_benchmark(benchmark, N, H, method, suffix=None):
-    bench_dir = Path("../benchmarks/")
+    bench_dir = Path("../benchmarks/"); bench_dir.mkdir(exist_ok=True)
     file_name = f"bench_N{N}_{method}_{H.model}_B{state2str(H.linear)}_J{state2str(H.quadratic)}"
     if suffix is not None: file_name += f"_{suffix}"
     save_path = (bench_dir/file_name).with_suffix(".pkl")
@@ -160,6 +160,7 @@ def checkpoint2results(N, model, maxP, IDs, episode):
 
 def save_model(agent, H, maxP, ID):
     agents_dir = Path("../trained_models/")
+    agents_dir.mkdir(exist_ok=True)
     if H.model == 'xy':
         agent_name = f"agent_N{agent.N}_{H.model}_{maxP}_id{ID}_{state2str(H.linear)}_{state2str(H.quadratic)}_g{H.g}.pt"
     elif H.model == 'graph':
