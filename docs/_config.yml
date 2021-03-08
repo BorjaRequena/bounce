@@ -1,7 +1,7 @@
-repository: BorjaRequena/bounce
+repository: BorjaRequena/BOUNCE
 output: web
-topnav_title: bounce
-site_title: bounce
+topnav_title: BOUNCE
+site_title: BOUNCE
 company_name: Borja Requena
 description: Certificates of quantum many-body properties assisted by machine learning
 # Set to false to disable KaTeX math
@@ -60,4 +60,4 @@ sidebars:
 - home_sidebar
 
 theme: jekyll-theme-cayman
-baseurl: /bounce/
+baseurl: /BOUNCE/
