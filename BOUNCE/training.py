@@ -112,7 +112,7 @@ def train_agent(env, agent, episodes, time_steps=20, opt=None, best_ref=None,
     if isinstance(episodes, int): episodes = (episodes,)
     final_reward, final_params, final_energies, final_optimals, optimal_states = [], [], [], [], []
     visited_states, visited_energies, visited_params, oracle_rewards, visited_rewards = [], [], [], [], []
-    ckp_dir = Path("../trained_models/checkpoints/"); ckp_dir.mkdir(exist_ok=True)
+    ckp_dir = Path("../trained_models/checkpoints/"); ckp_dir.mkdir(parents=True, exist_ok=True)
     ckp_name = None
     breaking = False
 

@@ -28,7 +28,7 @@ entries:
       title: Utils
       url: utils.html
     - output: web,pdf
-      title: 'SDP '
+      title: 'Semidefinite programming '
       url: sdp.html
     output: web
     title: bounce

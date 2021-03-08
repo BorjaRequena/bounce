@@ -21,16 +21,16 @@ class Hamiltonian1D:
         self.linear = linear
         self.quadratic = quadratic
 
-    def draw_system(self):
-        """Conceptual drawing of the system showing interaction strength and on-site field"""
+    def draw_system(self, figsize=(8,6), cmap=plt.cm.plasma):
+        "Conceptual drawing of the system showing interaction strength and on-site field."
         G = nx.Graph()
         G.add_nodes_from([(node,{'w': w}) for node,w in zip(np.arange(self.N),self.linear)])
         G.add_edges_from([(n,n+1,{'w': w}) if n<self.N-1 else (n,0,{'w': w}) for n,w in zip(np.arange(self.N), self.quadratic)])
-        plt.figure(figsize=(8,6))
+        plt.figure(figsize=figsize)
         pos = nx.circular_layout(G)
         for (n, d) in G.nodes(data=True):
             nx.draw_networkx_nodes(G, pos=pos, nodelist=[n], node_size=400, node_color=[d['w']/np.max(self.linear)],
-                                   cmap=plt.cm.viridis, vmin=0, vmax=1)
+                                   cmap=cmap, vmin=0, vmax=1)
         for (u,v,d) in G.edges(data=True):
             nx.draw_networkx_edges(G, pos=pos, edgelist=[(u,v)], width=5, alpha=d['w']/np.max(self.quadratic))
         d = np.array([-0.1, 0])

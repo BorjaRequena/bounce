@@ -7,6 +7,6 @@
     "Hamiltonian": "hamiltonian.html",
     "Training": "training.html",
     "Utils": "utils.html",
-    "SDP ": "sdp.html"
+    "Semidefinite programming ": "sdp.html"
   }
 }

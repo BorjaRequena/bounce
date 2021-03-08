@@ -1,13 +1,13 @@
 ---
 
-title: SDP 
+title: Semidefinite programming 
 
 
 keywords: fastai
 sidebar: home_sidebar
 
-summary: "Toolkit to solve the semi-definite program defined by the layout and Hamiltonian."
-description: "Toolkit to solve the semi-definite program defined by the layout and Hamiltonian."
+summary: "Toolkit to solve the semi-definite program defined by the set of constraints and Hamiltonian."
+description: "Toolkit to solve the semi-definite program defined by the set of constraints and Hamiltonian."
 nb_path: "nbs/06_sdp.ipynb"
 ---
 <!--
@@ -118,6 +118,13 @@ nb_path: "nbs/06_sdp.ipynb"
 </div>
     {% endraw %}
 
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The SdP is built imposing the compatibility contraints from the layout. There, we simply provide a list of <code>np.array</code> containing the support for each reduced density matrix (RDM) that we consider. In the following example, we solve the SdP given the example Hamiltonian and imposing compatibility over a single pair of sites. We will consider the RDMs $\rho_0, \rho_1, \rho_2, \rho_3, \rho_4, \rho_{50}$ in a ring with 6 sites, which is the same as the set of constraints $C=\{\{0\},\{1\},\{2\},\{3\},\{4\},\{5,0\}\}$. The function <a href="/BOUNCE/utils.html#fill_layout"><code>fill_layout</code></a> allows us to skip the 1-body terms when providing the set of constraints, as it will fill any site that is not contained within the provided constraints with its corresponding 1-body term.</p>
+
+</div>
+</div>
+</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -128,8 +135,6 @@ nb_path: "nbs/06_sdp.ipynb"
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">N</span> <span class="o">=</span> <span class="mi">6</span>
 <span class="n">B</span><span class="p">,</span> <span class="n">J</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">N</span><span class="p">,</span> <span class="p">[</span><span class="n">i</span><span class="o">%</span><span class="k">3</span> for i in range(N)]
 <span class="n">H</span> <span class="o">=</span> <span class="n">XXHamiltonian</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">J</span><span class="p">)</span>
-
-<span class="n">layout</span> <span class="o">=</span> <span class="n">fill_layout</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="p">])],</span> <span class="n">N</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -139,6 +144,13 @@ nb_path: "nbs/06_sdp.ipynb"
 </div>
     {% endraw %}
 
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>With the Hamiltonian, define the set of constraints.</p>
+
+</div>
+</div>
+</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -146,24 +158,8 @@ nb_path: "nbs/06_sdp.ipynb"
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">layout</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">solve_sdp</span><span class="p">(</span><span class="n">layout</span><span class="p">,</span> <span class="n">H</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">simple_layout</span> <span class="o">=</span> <span class="n">fill_layout</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">])],</span> <span class="n">N</span><span class="p">)</span>
+<span class="n">simple_layout</span>
 </pre></div>
 
     </div>
@@ -178,7 +174,7 @@ nb_path: "nbs/06_sdp.ipynb"
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>-17.999999999692708</pre>
+<pre>[array([0, 5]), array([1]), array([2]), array([3]), array([4])]</pre>
 </div>
 
 </div>
@@ -191,7 +187,121 @@ nb_path: "nbs/06_sdp.ipynb"
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Cost-estimation">Cost estimation<a class="anchor-link" href="#Cost-estimation"> </a></h2><p>In order to have an estimation of the computational cost required to solve a given SDP, we estimate the amount of free variables in the optimization problem.</p>
+<p>And now we can solve the associated SdP to the Hamiltonian with the given set of constraints.</p>
+
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">solve_sdp</span><span class="p">(</span><span class="n">simple_layout</span><span class="p">,</span> <span class="n">H</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>-15.999999999012134</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Tightening the constraints we can obtain a better energy bound. For instance, adding a 3-body constraint to the previous set.</p>
+
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">stronger_layout</span> <span class="o">=</span> <span class="n">fill_layout</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">])],</span> <span class="n">N</span><span class="p">)</span>
+<span class="n">stronger_layout</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>[array([1, 2, 3]), array([0, 5]), array([4])]</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">solve_sdp</span><span class="p">(</span><span class="n">stronger_layout</span><span class="p">,</span> <span class="n">H</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>-12.4721359498209</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Cost-estimation">Cost estimation<a class="anchor-link" href="#Cost-estimation"> </a></h2><p>In order to have an estimation of the computational cost required to solve a given SdP, we estimate the amount of free variables in the optimization problem.</p>
 
 </div>
 </div>
@@ -228,6 +338,13 @@ nb_path: "nbs/06_sdp.ipynb"
 </div>
     {% endraw %}
 
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Following with our previous example, the first set of constraints was rather loose, providing a low energy bound. However, the second set of constraints provided a tighter bound, although the SdP was harder to solve.</p>
+
+</div>
+</div>
+</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -235,7 +352,7 @@ nb_path: "nbs/06_sdp.ipynb"
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">ojimetro</span><span class="p">(</span><span class="n">layout</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">ojimetro</span><span class="p">(</span><span class="n">simple_layout</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -250,7 +367,7 @@ nb_path: "nbs/06_sdp.ipynb"
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>35</pre>
+<pre>31</pre>
 </div>
 
 </div>
@@ -261,6 +378,46 @@ nb_path: "nbs/06_sdp.ipynb"
 </div>
     {% endraw %}
 
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">ojimetro</span><span class="p">(</span><span class="n">stronger_layout</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>83</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>With the first set of constraints, the resulting SdP had 31 free variables to optimize, while the second SdP had to deal with 83. Tighter energy bounds usually come at the cost of higher computational costs.</p>
+
+</div>
+</div>
+</div>
 </div>
  
 
