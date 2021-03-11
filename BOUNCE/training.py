@@ -106,7 +106,7 @@ class DQNTrainer:
 
 # Cell
 def train_agent(env, agent, episodes, time_steps=20, opt=None, best_ref=None,
-                evaluate=True, train_id=None, ckp=100, save=True, break_opt=False):
+                evaluate=True, break_opt=False, train_id=None, ckp=20, save=True):
     "Trains an agent given an environment."
     if train_id is None: train_id = np.random.randint(100, 1000)
     if isinstance(episodes, int): episodes = (episodes,)
@@ -173,8 +173,9 @@ def train_agent(env, agent, episodes, time_steps=20, opt=None, best_ref=None,
 
 DQNTrainer.train = delegates(to=train_agent)(DQNTrainer.train)
 
+# Cell
 def step(state, agent, environment, episode=1):
-    """Take a step forward from state following the agent's policy"""
+    "Take a step forward from state following the agent's policy"
     actions = agent.try_actions(state)
     next_state, action, energy, params, err = environment.perform_action(actions, episode)
     return next_state, action, energy, params, err
@@ -198,13 +199,14 @@ def evaluate_agent(agent, environment, time_steps, episode=0):
     return reward, energy, params
 
 def check_optim(opt, E, P):
-    "When we know the true optimal state first-hand, we can check whether their energies and parameters match"
+    "Checks whether the current energy `E` and parameters `P` match with the optimal ones."
     return np.allclose((E, P), opt)
 
 # Cell
-def explore_brfs(env, agent, max_states, opt=None, best_ref=None):
+def explore_brfs(env, agent, max_states, opt=None, best_ref=None, break_opt=False):
     "Space exploration with Breadth First Search (BrFS)"
     state_count = 0
+    breaking = False
     visited_states, energies, parameters, rewards, optims = [], [], [], [], []
     while state_count < max_states:
         expanded_states = agent.expand()
@@ -223,11 +225,12 @@ def explore_brfs(env, agent, max_states, opt=None, best_ref=None):
                     if opt is not None: optims.append(check_optim(opt, energy, params))
                     if best_ref is not None:
                         rewards.append(get_reward(env, energy, params, best_ref=best_ref))
+                    if break_opt and check_optim(opt, energy, params): breaking = True; break
+
                 else:
                     agent.add_closed(simp_state)
 
-        if len(expanded_states) is 0:
-            break
+        if breaking or len(expanded_states) is 0: break
 
     env.save_memory()
     return agent, env, visited_states, energies, parameters, rewards, optims
@@ -270,9 +273,10 @@ class BrFSTrainer:
         return BrFSAgent(self.env.N, self.env.state)
 
 # Cell
-def explore_mc(env, agent, max_states, opt=None, best_ref=None, ckp=200):
+def explore_mc(env, agent, max_states, opt=None, best_ref=None, ckp=20, break_opt=False):
     "Space exploration with Monte-Carlo (MC)"
     visited_states, energies, parameters, oracle_rewards, visited_rewards, optims = [], [], [], [], [], []
+    breaking = False
     # Initial state
     state = env.reset()
     energy1, params1, _ = env.get_values()
@@ -291,6 +295,8 @@ def explore_mc(env, agent, max_states, opt=None, best_ref=None, ckp=200):
             if opt is not None: optims.append(check_optim(opt, energy2, params2))
             if best_ref is not None:
                 oracle_rewards.append(get_reward(env, energy2, params2, best_ref=best_ref))
+            if break_opt and check_optim(opt, energy2, params2): breaking = True; break
+        if breaking: break
 
         if agent.accept(r1, r2):
             state = deepcopy(next_state)

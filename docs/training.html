@@ -77,7 +77,7 @@ nb_path: "nbs/04_training.ipynb"
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>The <a href="/BOUNCE/training.html#DQNTrainer"><code>DQNTrainer</code></a> depends entirely on the <a href="/BOUNCE/training.html#train_agent"><code>train_agent</code></a> function. This, in itself, relies on several inner functionalities show below.</p>
+<p>The <a href="/BOUNCE/training.html#DQNTrainer"><code>DQNTrainer</code></a> depends entirely on the <a href="/BOUNCE/training.html#train_agent"><code>train_agent</code></a> function. This, in itself, relies on several inner functionalities shown below.</p>
 
 </div>
 </div>
@@ -107,6 +107,23 @@ nb_path: "nbs/04_training.ipynb"
 </div>
     {% endraw %}
 
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>To train an agent, provide the environment <code>env</code> containing the all the details about the problem that is to be solved and the <code>agent</code>, which is an initialized <a href="/BOUNCE/agents.html#DQNAgent"><code>DQNAgent</code></a>. The learning process is structured in a number of <code>episodes</code> of length <code>time_steps</code>. Every episode starts from the same initial state and the agent performs a trajectory through the state space of length <code>time_steps</code>. The agent gathers experience throughout the episode that then, once it has gathered enough, it is replayed to learn. The target network for double Q-learning is updated every <code>agent.target_update</code> learning episodes.</p>
+<p>If <code>evaluate</code> is set to <code>True</code>, the agent performs an evaluation episode after each training episode. With this, we can keep track of the convergence of the agent by looking at the final state of this episode. For the evaluation, there can be provided the optional <code>opt</code> and <code>best_ref</code>, which are used to check whether the agent is reaching the optimal configuration and the relative performance with respect to it. When only considering the exploration capabilities, <code>break_opt</code> is used to stop the learning process once the agent has encountered the optimal state.</p>
+<p>The optional inputs <code>train_id</code>, <code>ckp</code> and <code>save</code> are meant to handle data storage. With <code>train_id</code> we name the agent to save the training data in a consistent way. This is specially important when training agents in parallel, although <a href="/BOUNCE/training.html#DQNTrainer"><code>DQNTrainer</code></a> already handles this automatically. If no <code>train_id</code> is provided, the agent is assigned one at random. The training process is backed up every <code>ckp</code> training episodes and, if <code>save</code> is set to <code>True</code>, the resulting trained agent is saved at the end of the training process.</p>
+<p><a href="/BOUNCE/training.html#train_agent"><code>train_agent</code></a> uses the following functionalities to make the code more readable.</p>
+
+</div>
+</div>
+</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
