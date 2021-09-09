@@ -134,7 +134,6 @@ def train_agent(env, agent, episodes, time_steps=20, opt=None, best_ref=None,
                     oracle_rewards.append(get_reward(env, energy, params, best_ref=best_ref))
 
             if break_opt and check_optim(opt, energy, params): breaking = True; break
-        if breaking: break
 
         if len(agent.memory) >= agent.batch_size//5:
             agent.replay(env)                                                  # Replay to learn
@@ -153,7 +152,7 @@ def train_agent(env, agent, episodes, time_steps=20, opt=None, best_ref=None,
             optimal_states.append(np.mean(optims))
 
         # Save checkpoint
-        if e%ckp == 0 or e==episodes[0]-1:
+        if e%ckp == 0 or e==episodes[0]-1 or breaking:
             if ckp_name is not None: (ckp_dir/ckp_name).unlink()
             ckp_name = f"ckp_N{agent.N}_{env.H.model}_{env.param_profile.max_params}_id{train_id}_e{e}.pt"
             checkpoint = {'model': agent.model, 'model_state_dict': agent.model.state_dict, 'env': env,
@@ -163,6 +162,8 @@ def train_agent(env, agent, episodes, time_steps=20, opt=None, best_ref=None,
                    'oracle_rewards': oracle_rewards, 'visited_rewards': visited_rewards}
             torch.save(checkpoint, ckp_dir/ckp_name)
             env.save_memory()
+
+        if breaking: break
 
     # Once trained, save updated memory file and trained agent
     env.save_memory()

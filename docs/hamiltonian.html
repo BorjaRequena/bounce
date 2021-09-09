@@ -47,7 +47,7 @@ nb_path: "nbs/03_hamiltonian.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="Hamiltonian1D" class="doc_header"><code>class</code> <code>Hamiltonian1D</code><a href="https://github.com/BorjaRequena/BOUNCE/tree/master/bounce/hamiltonian.py#L12" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>Hamiltonian1D</code>(<strong><code>N</code></strong>, <strong><code>linear</code></strong>, <strong><code>quadratic</code></strong>)</p>
+<h2 id="Hamiltonian1D" class="doc_header"><code>class</code> <code>Hamiltonian1D</code><a href="https://github.com/BorjaRequena/bounce/tree/master/bounce/hamiltonian.py#L12" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>Hamiltonian1D</code>(<strong><code>N</code></strong>, <strong><code>linear</code></strong>, <strong><code>quadratic</code></strong>)</p>
 </blockquote>
 
 </div>
@@ -94,7 +94,7 @@ where $J_i$ is the pair-wise antiferromagnetic exchange and $B_i$ is the strengt
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="XYHamiltonian" class="doc_header"><code>class</code> <code>XYHamiltonian</code><a href="https://github.com/BorjaRequena/BOUNCE/tree/master/bounce/hamiltonian.py#L42" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>XYHamiltonian</code>(<strong><code>N</code></strong>, <strong><code>linear</code></strong>, <strong><code>quadratic</code></strong>, <strong><code>g</code></strong>) :: <a href="/BOUNCE/hamiltonian.html#Hamiltonian1D"><code>Hamiltonian1D</code></a></p>
+<h2 id="XYHamiltonian" class="doc_header"><code>class</code> <code>XYHamiltonian</code><a href="https://github.com/BorjaRequena/bounce/tree/master/bounce/hamiltonian.py#L41" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>XYHamiltonian</code>(<strong><code>N</code></strong>, <strong><code>linear</code></strong>, <strong><code>quadratic</code></strong>, <strong><code>g</code></strong>) :: <a href="/BOUNCE/hamiltonian.html#Hamiltonian1D"><code>Hamiltonian1D</code></a></p>
 </blockquote>
 
 </div>
@@ -125,7 +125,7 @@ where $J_i$ is the pair-wise antiferromagnetic exchange and $B_i$ is the strengt
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="XXHamiltonian" class="doc_header"><code>class</code> <code>XXHamiltonian</code><a href="https://github.com/BorjaRequena/BOUNCE/tree/master/bounce/hamiltonian.py#L58" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>XXHamiltonian</code>(<strong><code>N</code></strong>, <strong><code>linear</code></strong>, <strong><code>quadratic</code></strong>) :: <a href="/BOUNCE/hamiltonian.html#Hamiltonian1D"><code>Hamiltonian1D</code></a></p>
+<h2 id="XXHamiltonian" class="doc_header"><code>class</code> <code>XXHamiltonian</code><a href="https://github.com/BorjaRequena/bounce/tree/master/bounce/hamiltonian.py#L57" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>XXHamiltonian</code>(<strong><code>N</code></strong>, <strong><code>linear</code></strong>, <strong><code>quadratic</code></strong>) :: <a href="/BOUNCE/hamiltonian.html#Hamiltonian1D"><code>Hamiltonian1D</code></a></p>
 </blockquote>
 
 </div>
@@ -160,7 +160,6 @@ where $J_i$ is the pair-wise antiferromagnetic exchange and $B_i$ is the strengt
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">N</span> <span class="o">=</span> <span class="mi">10</span>
-<span class="n">model</span> <span class="o">=</span> <span class="s1">&#39;xx&#39;</span> 
 <span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
 <span class="n">J</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
 <span class="n">H</span> <span class="o">=</span> <span class="n">XXHamiltonian</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">J</span><span class="p">)</span>
@@ -209,9 +208,9 @@ where $J_i$ is the pair-wise antiferromagnetic exchange and $B_i$ is the strengt
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="Hamiltonian1D.draw_system" class="doc_header"><code>Hamiltonian1D.draw_system</code><a href="https://github.com/BorjaRequena/BOUNCE/tree/master/bounce/hamiltonian.py#L24" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>Hamiltonian1D.draw_system</code>()</p>
+<h4 id="Hamiltonian1D.draw_system" class="doc_header"><code>Hamiltonian1D.draw_system</code><a href="https://github.com/BorjaRequena/bounce/tree/master/bounce/hamiltonian.py#L24" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>Hamiltonian1D.draw_system</code>(<strong><code>figsize</code></strong>=<em><code>(8, 6)</code></em>, <strong><code>cmap</code></strong>=<em><code>&lt;matplotlib.colors.ListedColormap object at 0x7f18e8566810&gt;</code></em>)</p>
 </blockquote>
-<p>Conceptual drawing of the system showing interaction strength and on-site field</p>
+<p>Conceptual drawing of the system showing interaction strength and on-site field.</p>
 
 </div>
 
@@ -258,6 +257,52 @@ where $J_i$ is the pair-wise antiferromagnetic exchange and $B_i$ is the strengt
 </div>
     {% endraw %}
 
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>For completeness, we provide an additional example of the Heisenberg Hamiltonian including interaction in the $\sigma^z$ direction $$H=\sum_i J_i(\sigma_{i}^x\sigma_{i+1}^x + \sigma_{i}^y\sigma_{i+1}^y + \sigma_{i}^z\sigma_{i+1}^z) + \sum_i B_i\sigma_i^z$$
+This model, with $B_i=0 \ \forall i$, is used in <a href="https://iopscience.iop.org/article/10.1088/1742-6596/1163/1/012057">[1]</a>. See the <a href="https://borjarequena.github.io/BOUNCE/sdp.html">SdP docs</a> for further details.</p>
+
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_markdown rendered_html output_subarea ">
+<h2 id="XYZHamiltonian" class="doc_header"><code>class</code> <code>XYZHamiltonian</code><a href="https://github.com/BorjaRequena/bounce/tree/master/bounce/hamiltonian.py#L77" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>XYZHamiltonian</code>(<strong><code>N</code></strong>, <strong><code>linear</code></strong>, <strong><code>quadratic</code></strong>) :: <a href="/BOUNCE/hamiltonian.html#Hamiltonian1D"><code>Hamiltonian1D</code></a></p>
+</blockquote>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="References">References<a class="anchor-link" href="#References"> </a></h2><p>[1] F. Uskov and O. Lychkovskiy. <a href="https://iopscience.iop.org/article/10.1088/1742-6596/1163/1/012057">A variational lower bound on the ground state of a many-body system and the squaring parametrization of density matrices</a>. <em>Journal of Physics: Conference Series</em> <strong>1163</strong> 012057 (2019)</p>
+
+</div>
+</div>
+</div>
 </div>
  
 

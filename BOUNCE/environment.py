@@ -314,7 +314,7 @@ class SDPEnvironment:
         self.layout_basis = []
         for item in a:
             self.layout_basis.append([int(s) for s in item.split(sep=" ") if s.isdigit()])
-        self.layout_basis = np.array(self.layout_basis)
+        self.layout_basis = np.array(self.layout_basis, dtype=object)
 
     def _constrain_basis(self):
         """Given the maximum allowed of parameters, this function redefines the basis

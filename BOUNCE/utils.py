@@ -2,8 +2,9 @@
 
 __all__ = ['plot_trainings', 'arrange_shape', 'best_so_far', 'convergence_time', 'indiv_convergence_time',
            'get_indiv_times', 'CPU_Unpickler', 'save_benchmark', 'load_benchmark', 'load_checkpoint',
-           'checkpoint2results', 'save_model', 'load_model', 'simplify_layout', 'fill_layout', 'state2int', 'state2str',
-           'state_in_list', 'T', 'flip', 'contained_constraints', 'action_mask', 'dist_exp', 'dist_poly', 'binomial']
+           'checkpoint2results', 'save_model', 'load_model', 'bench_dir', 'ckp_dir', 'agents_dir', 'simplify_layout',
+           'fill_layout', 'state2int', 'state2str', 'state_in_list', 'T', 'flip', 'contained_constraints',
+           'action_mask', 'dist_exp', 'dist_poly', 'binomial']
 
 # Cell
 import numpy as np
@@ -116,8 +117,12 @@ class CPU_Unpickler(pickle.Unpickler):
         else: return super().find_class(module, name)
 
 # Cell
+bench_dir  = Path("../benchmarks/")
+ckp_dir    = Path("../trained_models/checkpoints/")
+agents_dir = Path("../trained_models/")
+
 def save_benchmark(benchmark, N, H, method, suffix=None):
-    bench_dir = Path("../benchmarks/"); bench_dir.mkdir(exist_ok=True)
+    bench_dir.mkdir(exist_ok=True)
     file_name = f"bench_N{N}_{method}_{H.model}_B{state2str(H.linear)}_J{state2str(H.quadratic)}"
     if suffix is not None: file_name += f"_{suffix}"
     save_path = (bench_dir/file_name).with_suffix(".pkl")
@@ -125,7 +130,6 @@ def save_benchmark(benchmark, N, H, method, suffix=None):
         pickle.dump(benchmark, f, protocol=pickle.HIGHEST_PROTOCOL)
 
 def load_benchmark(N, H, method, suffix=None):
-    bench_dir = Path("../benchmarks/")
     file_name = f"bench_N{N}_{method}_{H.model}_B{state2str(H.linear)}_J{state2str(H.quadratic)}"
     if suffix is not None: file_name += f"_{suffix}"
     load_path = (bench_dir/file_name).with_suffix(".pkl")
@@ -133,51 +137,56 @@ def load_benchmark(N, H, method, suffix=None):
         benchmark = pickle.load(f)
     return benchmark
 
-def load_checkpoint(H, maxP, ID, episode):
-    ckp_dir = Path("../trained_models/checkpoints/")
-    ckp_name = f"ckp_N{H.N}_{H.model}_{maxP}_id{ID}_e{episode}.pt"
+def load_checkpoint(H, max_p, ID, episode):
+    ckp_name = f"ckp_N{H.N}_{H.model}_{max_p}_id{ID}_e{episode}.pt"
     return torch.load(ckp_dir/ckp_name)
 
-def checkpoint2results(N, model, maxP, IDs, episode):
+def checkpoint2results(N, model, max_p=None, IDs=None, episode=None):
     "Loads checkpoints from IDs and converts them to result format."
     models, envs, final_rewards, final_params, final_energies, final_optims, expl_optims = [], [], [], [], [], [], []
     visited_states, visited_energies, visited_params, oracle_rewards, visited_rewards = [], [], [], [], []
-    for ID in IDs:
-        try:
-            ckp = load_checkpoint(N, model, maxP, ID, episode)
-            models.append(ckp['model']); envs.append(ckp['env']); final_rewards.append(ckp['final_reward'])
-            final_params.append(ckp['final_params']); final_energies.append(ckp['final_energies'])
-            final_optims.append(ckp['eval_optims']); expl_optims.append(ckp['expl_optims'])
-            visited_states.append(ckp['visited_states']); visited_energies.append(ckp['visited_energies'])
-            visited_params.append(ckp['visited_params']); oracle_rewards.append(ckp['oracle_rewards'])
-            visited_rewards.append(ckp['visited_rewards'])
-        except: print(f"Failed to load ID{ID}")
+    if IDs is None:
+        ckp_paths = [c for c in ckp_dir.ls() if f"N{N}" in str(c) and f"{model}" in str(c)]
+        if max_p is not None:   ckp_paths = [c for c in ckp_paths if f"_{max_p}_" in str(c)]
+        if episode is not None: ckp_paths = [c for c in ckp_paths if f"e{episode}" in str(c)]
+        checkpoints = [torch.load(c) for c in ckp_paths]
+    else:
+        checkpoints = []
+        for ID in IDs:
+            try:    checkpoints.append(load_checkpoint(N, model, max_p, ID, episode))
+            except: print(f"Failed to load ID{ID}")
+    for ckp in checkpoints:
+        models.append(ckp['model']); envs.append(ckp['env']); final_rewards.append(ckp['final_reward'])
+        final_params.append(ckp['final_params']); final_energies.append(ckp['final_energies'])
+        final_optims.append(ckp['eval_optims']); expl_optims.append(ckp['expl_optims'])
+        visited_states.append(ckp['visited_states']); visited_energies.append(ckp['visited_energies'])
+        visited_params.append(ckp['visited_params']); oracle_rewards.append(ckp['oracle_rewards'])
+        visited_rewards.append(ckp['visited_rewards'])
+
     training_results = {'models': models, 'envs': envs, 'rewards': final_rewards, 'params': final_params,
                         'energies': final_energies, 'eval_optims': final_optims, 'expl_optims': expl_optims}
     exploration_results = {'agents': models, 'envs': envs, 'visited_states': visited_states, 'energies': visited_energies,
                            'params': visited_params, 'oracle_rewards': oracle_rewards, 'visited_rewards': visited_rewards}
     return {'training': training_results, 'exploration': exploration_results}
 
-def save_model(agent, H, maxP, ID):
-    agents_dir = Path("../trained_models/")
+def save_model(agent, H, max_p, ID):
     agents_dir.mkdir(exist_ok=True)
     if H.model == 'xy':
-        agent_name = f"agent_N{agent.N}_{H.model}_{maxP}_id{ID}_{state2str(H.linear)}_{state2str(H.quadratic)}_g{H.g}.pt"
+        agent_name = f"agent_N{agent.N}_{H.model}_{max_p}_id{ID}_{state2str(H.linear)}_{state2str(H.quadratic)}_g{H.g}.pt"
     elif H.model == 'graph':
-        agent_name = f"agent_N{agent.N}_{H.model}_{maxP}_id{ID}.pt"
+        agent_name = f"agent_N{agent.N}_{H.model}_{max_p}_id{ID}.pt"
     else:
-        agent_name = f"agent_N{agent.N}_{H.model}_{maxP}_id{ID}_{state2str(H.linear)}_{state2str(H.quadratic)}.pt"
+        agent_name = f"agent_N{agent.N}_{H.model}_{max_p}_id{ID}_{state2str(H.linear)}_{state2str(H.quadratic)}.pt"
 
     torch.save({'model': agent.model, 'state_dict': agent.model.state_dict}, agents_dir/agent_name)
 
-def load_model(H, maxP, ID):
-    agents_dir = Path("../trained_models/")
+def load_model(H, max_p, ID):
     if H.model == 'xy':
-        agent_name = f"agent_N{H.N}_{H.model}_{maxP}_id{ID}_{state2str(H.linear)}_{state2str(H.quadratic)}_g{H.g}.pt"
+        agent_name = f"agent_N{H.N}_{H.model}_{max_p}_id{ID}_{state2str(H.linear)}_{state2str(H.quadratic)}_g{H.g}.pt"
     elif H.model == 'graph':
-        agent_name = f"agent_N{H.N}_{H.model}_{maxP}_id{ID}.pt"
+        agent_name = f"agent_N{H.N}_{H.model}_{max_p}_id{ID}.pt"
     else:
-        agent_name = f"agent_N{H.N}_{H.model}_{maxP}_id{ID}_{state2str(H.linear)}_{state2str(H.quadratic)}.pt"
+        agent_name = f"agent_N{H.N}_{H.model}_{max_p}_id{ID}_{state2str(H.linear)}_{state2str(H.quadratic)}.pt"
 
     return torch.load(agents_dir/agent_name)
 
