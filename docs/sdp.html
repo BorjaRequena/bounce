@@ -120,7 +120,8 @@ nb_path: "nbs/06_sdp.ipynb"
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Ground-state-energy-approximation">Ground state energy approximation<a class="anchor-link" href="#Ground-state-energy-approximation"> </a></h2>
+<h2 id="Ground-state-energy-approximation">Ground state energy approximation<a class="anchor-link" href="#Ground-state-energy-approximation"> </a></h2><p>Finding the ground state energy of a quantum Hamiltonian is a fundamental problem in quantum physics. It constitutes global optimization problem over all possible quantum states $\rho$ of the form $$E_0=\min_\rho \text{Tr}\left[\rho H\right]\,,$$ where $E_0$ denotes the ground state energy for the Hamiltonian $H$. Nonetheless, the complexity of such optimization task grows exponentially with the physical system's size, so we often rely on approximations. Here, we consider a relaxation of the problem based on an SdP.</p>
+
 </div>
 </div>
 </div>
@@ -495,6 +496,23 @@ The result is a lower bound of the Hamiltonian's ground state energy.</p>
 </div>
 </div>
 </div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">assert</span> <span class="n">solver</span><span class="o">.</span><span class="n">ojimetro</span><span class="p">(</span><span class="n">simple_layout</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">solver</span><span class="o">.</span><span class="n">ojimetro</span><span class="p">(</span><span class="n">stronger_layout</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="Alternative-methods-to-lower-bound-the-ground-state-energy">Alternative methods to lower bound the ground state energy<a class="anchor-link" href="#Alternative-methods-to-lower-bound-the-ground-state-energy"> </a></h3><p>We implement two other methods to obtain lower bounds of many-body Hamiltonians. We rewrite the Anderson bound <a href="https://journals.aps.org/pr/abstract/10.1103/PhysRev.83.1260">[2]</a> and the method introduced by Uskov and Lichovskiy in <a href="https://iopscience.iop.org/article/10.1088/1742-6596/1163/1/012057">[3]</a> in SdP form to compare with the proposed methodology above. The SdP formulation ensures that the obtained result is the actual global minimum.</p>
@@ -669,7 +687,9 @@ the reduced states have certain symmetries, such as translational invariance.</p
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Entanglement-witnessing">Entanglement witnessing<a class="anchor-link" href="#Entanglement-witnessing"> </a></h2>
+<h2 id="Entanglement-witnessing">Entanglement witnessing<a class="anchor-link" href="#Entanglement-witnessing"> </a></h2><p>We take an energy-based approach to build entanglement witnesses here. The main principle is, given a Hamiltonian, we compute the minimum possible energy obtainable within the set of separable states. Then, if we find a state that yields a lower energy, it means that it is entangled <a href="https://journals.aps.org/pra/abstract/10.1103/PhysRevA.71.010301">[4]</a>.</p>
+<p>Formally, $$\Delta E = \langle H\rangle - E_{\text{sep}}$$ denotes the energy gap between the expected energy of a state, $\langle H\rangle = \text{Tr}\left[\rho H\right]$, and the minimum energy obtainable by separable states, $E_{\text{sep}}$. If $\Delta E &lt; 0$, $\rho$ is an entangled state, as it is beyond the set of separable states. The larger the difference, $|\Delta E|$, the more robust the entanglement. Actually, $|\Delta E|$ quantifies the energy the system must receive to become separable.</p>
+
 </div>
 </div>
 </div>
@@ -709,8 +729,6 @@ a lower energy than that, the state is entangled.</p>
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>We take an energy-based approach to build entanglement witnesses here. The main principle is, given a Hamiltonian, we compute the minimum possible energy obtainable within the set of separable states. Then, if we find a state that yields a lower energy, it means that it is entangled <a href="https://journals.aps.org/pra/abstract/10.1103/PhysRevA.71.010301">[4]</a>.</p>
-<p>Formally, $$\Delta E = \langle H\rangle - E_{\text{sep}}$$ denotes the energy gap between the expected energy of a state, $\langle H\rangle = \text{Tr}\left[\rho H\right]$, and the minimum energy obtainable by separable states, $E_{\text{sep}}$. If $\Delta E &lt; 0$, $\rho$ is an entangled state, as it is beyond the set of separable states. The larger the difference, $|\Delta E|$, the more robust the entanglement. Actually, $|\Delta E|$ quantifies the energy the system must receive to become separable.</p>
 <p>The <a href="/bounce/sdp.html#SdPWitnessSolver"><code>SdPWitnessSolver</code></a> provides a lower bound for $E_{\text{sep}}$ given a <a href="/bounce/hamiltonian.html#Hamiltonian"><code>Hamiltonian</code></a>. We build upon the <a href="/bounce/sdp.html#SdPEnergySolver"><code>SdPEnergySolver</code></a> imposing additional constraints to enforce separability on our states. However, imposing such conditions to their full extent is extremely costly. Instead, we impose that our states are positive under partial transposition (PPT), which is a relaxation that is exact in the one-dimensional limit. Hence, the bound on $E_{\text{sep}}$.</p>
 <p>Let's see an example! First of all, we need to build our problem.</p>
 
