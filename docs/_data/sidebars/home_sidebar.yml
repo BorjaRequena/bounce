@@ -10,16 +10,13 @@ entries:
       title: Overview
       url: /
     - output: web,pdf
-      title: Environment
+      title: environment
       url: environment.html
     - output: web,pdf
       title: Agents
       url: agents.html
     - output: web,pdf
-      title: Budget profiles
-      url: budget_profiles.html
-    - output: web,pdf
-      title: Hamiltonian
+      title: hamiltonian
       url: hamiltonian.html
     - output: web,pdf
       title: Training

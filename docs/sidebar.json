@@ -1,10 +1,9 @@
 {
   "bounce": {
     "Overview": "/",
-    "Environment": "environment.html",
+    "environment": "environment.html",
     "Agents": "agents.html",
-    "Budget profiles": "budget_profiles.html",
-    "Hamiltonian": "hamiltonian.html",
+    "hamiltonian": "hamiltonian.html",
     "Training": "training.html",
     "Utils": "utils.html",
     "Semidefinite programming ": "sdp.html"

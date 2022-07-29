@@ -3,24 +3,24 @@
 __all__ = ['DQNAgent', 'DQN', 'BrFSAgent', 'MCAgent']
 
 # Cell
+import random
+import numpy as np
+from copy import deepcopy
+from collections import deque, namedtuple
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-import numpy as np
-from collections import deque, namedtuple
-import random
-from copy import deepcopy
-from bounce.utils import state2int, state2str, state_in_list, flip
-from bounce.utils import action_mask, contained_constraints, T
+
+from .utils import state2str, array_in_list, T
 
 # Cell
 class DQNAgent:
-    def __init__(self, N, model, learning_rate=1e-3, criterion=None, optimizer=None, batch_size=120,
+    def __init__(self, model, learning_rate=1e-3, criterion=None, optimizer=None, batch_size=128,
                  target_update=5, gamma=0.85, eps_0=1, eps_decay=0.999, eps_min=0.1):
         """Agent based on a deep Q-Network (DQN):
-        On input:
-            - N: Number of parties to consider
+        Input:
             - model: torch.nn.Module with the DQN model. Dimensions must be consistent
             - criterion: loss criterion (e.g., torch.nn.SmoothL1Loss)
             - optimizer: optimization algorithm (e.g., torch.nn.Adam)
@@ -28,8 +28,6 @@ class DQNAgent:
             - eps_decay: exponential decay factor for epsilon in the epsilon-greedy policy
             - eps_min: minimum saturation value for epsilon
             - gamma: future reward discount factor for Q-value estimation"""
-
-        self.N = N
 
         # Model
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -45,19 +43,17 @@ class DQNAgent:
         self._get_optimizer(optimizer)
         self.batch_size = batch_size
         self.memory = deque(maxlen=10000) # Replay memory
-        self.Transition = namedtuple('Transition', ('state', 'action', 'energy', 'params', 'next_state'))
+        self.transition = namedtuple('Transition', ('state', 'action', 'bound', 'cost', 'next_state'))
 
-    def try_actions(self, state):
-        "Given a state, return ordered chosen actions by priority."
-        mask = action_mask(state, self.N)
+    def act(self, state):
+        "Given a state, return actions ordered by priority."
 
-        if np.random.rand() <= self.epsilon:
-            return np.random.permutation(np.where(mask==True)[0])
+        if torch.rand(1) <= self.epsilon:
+            return torch.randperm(self.state_size)
         else:
             with torch.no_grad():
                 Q = self.q_values(state)
-                Q[mask==False] = torch.min(Q) - 1. # Remove value from impossible actions
-                return torch.argsort(Q, descending=True)[:sum(mask)]
+                return torch.argsort(Q, descending=True)
 
     def q_values(self, state):
         "Returns the Q values of each action given a state."
@@ -65,21 +61,23 @@ class DQNAgent:
         return self.model(state).squeeze()
 
     def replay(self, env):
+        "Learn from past events in the memory."
         batch_size = min(len(self.memory), self.batch_size)
         transitions = random.sample(self.memory, batch_size)
-#         transitions = random.sample(self.memory, self.batch_size)
-        batch = self.Transition(*zip(*transitions))
+        batch = self.transition(*zip(*transitions))
 
-        state_batch, action_batch, next_states = torch.cat(batch.state), torch.cat(batch.action), torch.cat(batch.next_state)
-        energy_batch, param_batch = torch.cat(batch.energy), torch.cat(batch.params)
-        reward_batch = env.reward_fun(energy_batch, param_batch)
+        state_batch, action_batch = torch.cat(batch.state), torch.cat(batch.action)
+        next_states = torch.cat(batch.next_state)
+        bound_batch, cost_batch = torch.cat(batch.bound), torch.cat(batch.cost)
+        reward_batch = env.reward_fun(bound_batch, cost_batch)
 
         if torch.isnan(reward_batch).any():
             shit_idx = torch.isnan(reward_batch)
-            raise ValueError(f"Shit was fooked, got nan in {next_states[shit_idx]}\nEnergy {energy_batch[shit_idx]}"+
-                            f"\nParams {param_batch[shit_idx]}"+
-                            f"\nReward {reward_batch[shit_idx]}"+
-                            f"\nReward batch {reward_batch}")
+            raise ValueError(f"Shit went wrong, got nan in {next_states[shit_idx]}"+
+                             f"\nBound {bound_batch[shit_idx]}"+
+                             f"\nCost {cost_batch[shit_idx]}"+
+                             f"\nReward {reward_batch[shit_idx]}"+
+                             f"\nReward batch {reward_batch}")
 
         # Q-values
         state_action_values = self.model(state_batch).gather(1, action_batch.reshape(batch_size, 1))
@@ -95,28 +93,16 @@ class DQNAgent:
         if self.epsilon > self.epsilon_min: self.epsilon *= self.epsilon_decay
         if self.epsilon < self.epsilon_min: self.epsilon = self.epsilon_min
 
-    def memorize(self, state, action, energy, params, next_state):
-        """Remember a state-action-state-reward transition."""
+    def memorize(self, state, action, bound, cost, next_state):
+        "Remember a state-action-state-reward transition."
         info = [torch.FloatTensor(state).reshape(1, self.state_size).to(self.device),
                 torch.tensor([action], device = self.device),
     #                 torch.FloatTensor([reward]).to(self.device),
-                torch.FloatTensor([energy]).to(self.device),
-                torch.FloatTensor([params]).to(self.device),
+                torch.FloatTensor([bound]).to(self.device),
+                torch.FloatTensor([cost]).to(self.device),
                 torch.FloatTensor(next_state).reshape(1, self.state_size).to(self.device)
                 ]
-        self.memory.append(self.Transition(*info))
-
-    def act(self, state):
-        """Take an action according to the epsilon-greedy policy"""
-        mask = action_mask(state, self.N)  # Possible actions
-
-        if np.random.rand() <= self.epsilon:
-            return np.random.choice(np.where(mask==True)[0])
-        else:
-            with torch.no_grad():
-                Q = self.q_values(state)
-                Q[mask==False] = torch.min(Q) - 1. # remove value from impossible actions
-                return int(torch.argmax(Q))
+        self.memory.append(self.transition(*info))
 
     def _build_target_net(self):
         model_params = list(self.model.parameters())
@@ -152,9 +138,8 @@ class DQN(nn.Module):
 
 # Cell
 class BrFSAgent:
-    def __init__(self, N, initial_state):
+    def __init__(self, initial_state):
         "Agent based on Breadth First Search (BrFS)."
-        self.N = N
         self.state_size = len(initial_state)
         self.open = deque([initial_state])
         self.closed = set()
@@ -164,14 +149,13 @@ class BrFSAgent:
         try :
             state = self.open.popleft()
             self.add_closed(state)
-            state[contained_constraints(state, self.N)] = 1
-            return np.random.permutation([flip(state, i) for i in range(self.state_size)])
+            return state, np.random.permutation(self.state_size)
         except:
-            return []
+            return [], []
 
     def in_open(self, state):
         "Boolean indicating whether state is in open"
-        return state_in_list(state, self.open)
+        return array_in_list(state, self.open)
 
     def in_closed(self, state):
         "Boolean indicating whether state is in closed"
@@ -187,18 +171,16 @@ class BrFSAgent:
 
 # Cell
 class MCAgent:
-    def __init__(self, N, beta=0.1):
-        self.N = N
+    def __init__(self, beta=0.1):
         self.beta = beta
         self.accepted = 0
 
-    def try_actions(self, state):
-        "Try random actions changing one constraint."
-        mask = action_mask(state, self.N)[:-1]
-        return np.random.permutation(np.where(mask==True)[0])
+    def act(self, state):
+        "Try random actions."
+        return np.random.permutation(len(state))
 
     def accept(self, r1, r2):
         "Boolean indicating whether to accept or not the movement from 1 to 2."
-        a = np.random.random() <= min(1, np.exp((r2-r1)/self.beta))
-        self.accepted += a
-        return a
+        accept = np.random.random() <= min(1, np.exp((r2-r1)/self.beta))
+        self.accepted += accept
+        return accept

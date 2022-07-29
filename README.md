@@ -1,5 +1,5 @@
 # Certificates of quantum many-body properties assisted by machine learning 
-> Repository hosting the code of the work '<a href='https://arxiv.org/abs/2103.03830'>Certificates of quantum many-body properties assisted by machine learning</a>' authored by Borja Requena, Gorka MuÃ±oz-Gil, Maciej Lewenstein, Vedran Dunjko and Jordi tura. 
+> Repository hosting the code of the work '<a href='https://arxiv.org/abs/2103.03830'>Certificates of quantum many-body properties assisted by machine learning</a>' authored by Borja Requena, Gorka Muñoz-Gil, Maciej Lewenstein, Vedran Dunjko and Jordi tura. 
 
 
 In this repository you can find the source code and a set of notebooks providing a thorough example of how to use the library and how to reproduce the figures shown in the paper. 
