@@ -70,8 +70,8 @@ class SquareLattice(Graph):
                 top, bottom = row == 0, row == self.n_rows - 1
                 if not left and not right: y -= dy
                 if not top and not bottom:
-                    if left:    x -= dx
-                    elif right: x += dx
+                    if right: x += dx
+                    else:     x -= dx
                 pos[n] = np.array([x, y])
             return pos
         else:
