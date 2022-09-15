@@ -1,0 +1,9 @@
+project:
+  output-dir: _docs
+
+website:
+  title: "bounce"
+  site-url: "https://BorjaRequena.github.io/BOUNCE/"
+  description: "Certificates of quantum many-body properties assisted by machine learning"
+  repo-branch: master
+  repo-url: "https://github.com/BorjaRequena/BOUNCE/tree/master/"
