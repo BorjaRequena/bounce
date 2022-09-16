@@ -14,6 +14,7 @@ tags
 **/checkpoints
 **/trained_models
 **/benchmarks
+**/memories
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
