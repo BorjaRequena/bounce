@@ -7,14 +7,15 @@ BOUNCE
 
 <p align="center">
 <a href="https://borjarequena.github.io/BOUNCE/">Documentation</a> \|
-<a href="https://borjarequena.github.io/BOUNCE/">Tutorials</a> \|
-<a href="#cite-us">Cite us</a>
+<a href="https://borjarequena.github.io/BOUNCE/tutorial/introduction.html">Tutorials</a>
+\| <a href="#cite-us">Cite us</a>
 </p>
 
 We have originally developed this library for the paper [**Certificates
 of quantum many-body properties assisted by machine
 learning**](https://arxiv.org/abs/2103.03830). Here, you will find the
-source code used to obtain the paper results in the [tutorials]().
+source code used to obtain the paper results in the
+[tutorials](https://borjarequena.github.io/BOUNCE/tutorial/introduction.html).
 
 # Installation
 
