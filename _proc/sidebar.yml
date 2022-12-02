@@ -1,0 +1,19 @@
+website:
+  sidebar:
+    contents:
+      - index.ipynb
+      - section: Documentation
+        contents:
+          - source/00_environment.ipynb
+          - source/01_agents.ipynb
+          - source/02_hamiltonian.ipynb
+          - source/05_sdp.ipynb
+          - source/03_training.ipynb
+          - source/04_utils.ipynb
+      - section: Tutorials
+        contents:
+          - tutorial/00_introduction.ipynb
+          - tutorial/01_benchmarking.ipynb
+          - tutorial/02_transfer_learning.ipynb
+          - tutorial/03_entanglement_witnessing.ipynb
+          - tutorial/04_plots.ipynb
