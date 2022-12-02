@@ -3,7 +3,7 @@ project:
 
 website:
   title: "bounce"
-  site-url: "https://BorjaRequena.github.io/BOUNCE"
+  site-url: "https://BorjaRequena.github.io/bounce"
   description: "Easy optimal relaxations for your hard optimization problems"
   repo-branch: main
-  repo-url: "https://github.com/BorjaRequena/BOUNCE"
+  repo-url: "https://github.com/BorjaRequena/bounce"

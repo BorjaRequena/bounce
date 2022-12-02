@@ -214,7 +214,7 @@ def check_optim(opt, B, C):
     "Checks whether the current bound `B` and cost `C` match with the optimal ones."
     return np.allclose((B, C), opt)
 
-# %% ../nbs/source/03_training.ipynb 24
+# %% ../nbs/source/03_training.ipynb 23
 def explore_brfs(env, agent, max_states, opt=None, best_ref=None, break_opt=False):
     "Space exploration with Breadth First Search (BrFS)"
     state_count = 0
@@ -284,7 +284,7 @@ class BrFSTrainer:
         "Instantiates an agent."
         return BrFSAgent(self.env.state)       
 
-# %% ../nbs/source/03_training.ipynb 30
+# %% ../nbs/source/03_training.ipynb 28
 def explore_mc(env, agent, max_states, opt=None, best_ref=None, ckp=20, break_opt=False):
     "Space exploration with Monte-Carlo (MC)"
     visited_states, bounds, costs, oracle_rewards, visited_rewards, optims = [], [], [], [], [], []
