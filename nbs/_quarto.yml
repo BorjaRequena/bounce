@@ -16,7 +16,7 @@ website:
     search: true
     right:
       - icon: github
-        href: "https://github.com/BorjaRequena/BOUNCE/"
+        href: "https://github.com/BorjaRequena/bounce/"
   sidebar:
     style: floating
 
