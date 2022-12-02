@@ -3,7 +3,7 @@ project:
 
 website:
   title: "bounce"
-  site-url: "https://BorjaRequena.github.io/BOUNCE/"
-  description: "Certificates of quantum many-body properties assisted by machine learning"
-  repo-branch: master
-  repo-url: "https://github.com/BorjaRequena/BOUNCE/tree/master/"
+  site-url: "https://BorjaRequena.github.io/BOUNCE"
+  description: "Easy optimal relaxations for your hard optimization problems"
+  repo-branch: main
+  repo-url: "https://github.com/BorjaRequena/BOUNCE"
