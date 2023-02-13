@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.335">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="This is the second notebook of a series of tutorials to use the BOUNCE library, which we developed for the Certificates of quantum many-body properties assisted by machine learning paper.">
+
+<title>bounce - Benchmarking agents</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<link rel="stylesheet" href="../styles.css">
+<meta property="og:title" content="bounce - Benchmarking agents">
+<meta property="og:description" content="This is the second notebook of a series of tutorials to use the [BOUNCE library](https://borjarequena.github.">
+<meta property="og:site-name" content="bounce">
+<meta name="twitter:title" content="bounce - Benchmarking agents">
+<meta name="twitter:description" content="This is the second notebook of a series of tutorials to use the [BOUNCE library](https://borjarequena.github.">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">bounce</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/BorjaRequena/bounce/"><i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">Benchmarking agents</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">BOUNCE</a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">Documentation</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../source/environment.html" class="sidebar-item-text sidebar-link">Environment</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../source/agents.html" class="sidebar-item-text sidebar-link">Agents</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../source/hamiltonian.html" class="sidebar-item-text sidebar-link">Hamiltonian</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../source/sdp.html" class="sidebar-item-text sidebar-link">Semidefinite programming</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../source/training.html" class="sidebar-item-text sidebar-link">Training</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../source/utils.html" class="sidebar-item-text sidebar-link">Utils</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">Tutorials</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorial/introduction.html" class="sidebar-item-text sidebar-link">Constraint optimization with reinforcement learning</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorial/benchmarking.html" class="sidebar-item-text sidebar-link active">Benchmarking agents</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorial/transfer_learning.html" class="sidebar-item-text sidebar-link">Transfer learning</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorial/entanglement_witnessing.html" class="sidebar-item-text sidebar-link">Energy-based entanglement witnesses</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorial/plots.html" class="sidebar-item-text sidebar-link">Plots</a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#comparing-different-optimizers" id="toc-comparing-different-optimizers" class="nav-link active" data-scroll-target="#comparing-different-optimizers">Comparing different optimizers</a>
+  <ul class="collapse">
+  <li><a href="#common-problem" id="toc-common-problem" class="nav-link" data-scroll-target="#common-problem">Common problem</a></li>
+  <li><a href="#evaluation-metric-towards-the-goal" id="toc-evaluation-metric-towards-the-goal" class="nav-link" data-scroll-target="#evaluation-metric-towards-the-goal">Evaluation metric towards the goal</a></li>
+  <li><a href="#run-the-different-algorithms" id="toc-run-the-different-algorithms" class="nav-link" data-scroll-target="#run-the-different-algorithms">Run the different algorithms</a></li>
+  </ul></li>
+  <li><a href="#benchmarking-for-different-system-sizes" id="toc-benchmarking-for-different-system-sizes" class="nav-link" data-scroll-target="#benchmarking-for-different-system-sizes">Benchmarking for different system sizes</a></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/BorjaRequena/bounce/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block">Benchmarking agents</h1>
+</div>
+
+<div>
+  <div class="description">
+    This is the second notebook of a series of tutorials to use the <a href="https://borjarequena.github.io/bounce/">BOUNCE library</a>, which we developed for the <a href="https://journals.aps.org/prresearch/abstract/10.1103/PhysRevResearch.5.013097">Certificates of quantum many-body properties assisted by machine learning</a> paper.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<p>In the first tutorial, we have seen how to define a problem and optimize its possible relaxations. We also mentioned that we can perform the optimization in different ways. Here, we show how to implement different optimization processes and how to compare them in a consistent way.</p>
+<p>More precisely, we study how the reinforcement learning (RL) optimization compares to a breadth first search (BFS) and a Monte Carlo (MC) optimization.</p>
+<section id="comparing-different-optimizers" class="level1">
+<h1>Comparing different optimizers</h1>
+<section id="common-problem" class="level2">
+<h2 class="anchored" data-anchor-id="common-problem">Common problem</h2>
+<p>In order to compare the optimizers, we need something to optimize! So, the first step is to define a problem. We will continue with the same example of the first tutorial: finding an approximation to the ground state energy of the Heisenberg XX model.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Hamiltonian</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">6</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>chain <span class="op">=</span> Chain1D(N)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>b, j <span class="op">=</span> <span class="fl">1.</span>, [<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">2</span>]</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>H <span class="op">=</span> XXHamiltonian(chain, b, j)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Solver</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>solver <span class="op">=</span> SdPEnergySolver()</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Environment</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>budget <span class="op">=</span> <span class="dv">305</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>env <span class="op">=</span> SdPEnvironment(H, solver, budget)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="evaluation-metric-towards-the-goal" class="level2">
+<h2 class="anchored" data-anchor-id="evaluation-metric-towards-the-goal">Evaluation metric towards the goal</h2>
+<p>Another key element is to find a proper evaluation metric for the agents. In this case, we exploit the clear properties of the system to find the optimal relaxation beforehand. This way, we can evaluate “how close” are the agents to the optimal solution at every step they take.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>H.draw()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="01_benchmarking_files/figure-html/cell-3-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p>As we had found in the first tutorial, the optimal relaxation provides a bound of -10.944 with 127 free SdP parameters. In this case, we can obtain the same bound investing all our resources, which involves 288 free parameters. These numbers clearly depend on the computational budget. We can provide this information to the trainers and they will compute the reward with respect to these parameters, which will allow us to compare the progress of the different algorithms towards the goal.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Training parameters</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>episodes <span class="op">=</span> <span class="dv">400</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>time_steps <span class="op">=</span> <span class="dv">6</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>opt <span class="op">=</span> (<span class="op">-</span><span class="fl">10.9443</span>, <span class="dv">127</span>) </span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>best_ref <span class="op">=</span> np.array([<span class="op">*</span>opt, <span class="dv">288</span>])</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>n_agents, jobs <span class="op">=</span> <span class="dv">5</span>, <span class="dv">5</span> <span class="co"># Number of agents to train and parallel threads</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="run-the-different-algorithms" class="level2">
+<h2 class="anchored" data-anchor-id="run-the-different-algorithms">Run the different algorithms</h2>
+<p>Now we’re all set and ready to run the different algorithms. We simply need to define the respective trainers for each of them. All the trainers have a similar sintax.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>learning_rate <span class="op">=</span> <span class="fl">5e-3</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>batch_size <span class="op">=</span> <span class="dv">160</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>eps_decay <span class="op">=</span> <span class="fl">0.95</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>dqn <span class="op">=</span> DQNTrainer(env, n_agents<span class="op">=</span>n_agents, n_jobs<span class="op">=</span>jobs, </span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>                 learning_rate<span class="op">=</span>learning_rate, batch_size<span class="op">=</span>batch_size, </span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>                 eps_decay<span class="op">=</span>eps_decay)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>brfs <span class="op">=</span> BrFSTrainer(env, n_agents<span class="op">=</span>n_agents, n_jobs<span class="op">=</span>jobs)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>mc <span class="op">=</span> MCTrainer(env, n_agents<span class="op">=</span>n_agents, n_jobs<span class="op">=</span>jobs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Train!</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>CPU times: user 4.09 s, sys: 233 ms, total: 4.32 s
+Wall time: 21.2 s</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>max_states <span class="op">=</span> <span class="bu">int</span>(<span class="fl">0.4</span><span class="op">*</span>episodes<span class="op">*</span>time_steps)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>CPU times: user 119 ms, sys: 1.78 ms, total: 121 ms
+Wall time: 731 ms</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>CPU times: user 89.3 ms, sys: 0 ns, total: 89.3 ms
+Wall time: 870 ms</code></pre>
+</div>
+</div>
+<p>Let’s see the results!</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>dqn_expl <span class="op">=</span> dqn_results[<span class="st">"exploration"</span>]</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>dqn_rewards <span class="op">=</span> arrange_shape(dqn_expl[<span class="st">'oracle_rewards'</span>])</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>brfs_rewards <span class="op">=</span> arrange_shape(brfs_results[<span class="st">'oracle_rewards'</span>])</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>mc_rewards <span class="op">=</span> arrange_shape(mc_results[<span class="st">'oracle_rewards'</span>])</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">4</span>))</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>plt.plot(np.mean(dqn_rewards, axis<span class="op">=</span><span class="dv">0</span>), label<span class="op">=</span><span class="st">"RL"</span>)</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>plt.plot(np.mean(brfs_rewards, axis<span class="op">=</span><span class="dv">0</span>), label<span class="op">=</span><span class="st">"BFS"</span>)</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>plt.plot(np.mean(mc_rewards, axis<span class="op">=</span><span class="dv">0</span>), label<span class="op">=</span><span class="st">"MC"</span>)</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>plt.grid()</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>plt.legend(fontsize<span class="op">=</span><span class="dv">16</span>)</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>plt.tick_params(labelsize<span class="op">=</span><span class="dv">16</span>)</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"New visited state"</span>, fontsize<span class="op">=</span><span class="dv">20</span>)</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Reward"</span>, fontsize<span class="op">=</span><span class="dv">20</span>)</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">4</span>))</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>plt.plot(np.mean(best_so_far(dqn_rewards), axis<span class="op">=</span><span class="dv">0</span>), linewidth<span class="op">=</span><span class="dv">2</span>, label<span class="op">=</span><span class="st">"RL"</span>)</span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>plt.plot(np.mean(best_so_far(brfs_rewards), axis<span class="op">=</span><span class="dv">0</span>), linewidth<span class="op">=</span><span class="dv">2</span>, label<span class="op">=</span><span class="st">"BFS"</span>)</span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>plt.plot(np.mean(best_so_far(mc_rewards), axis<span class="op">=</span><span class="dv">0</span>), linewidth<span class="op">=</span><span class="dv">2</span>, label<span class="op">=</span><span class="st">"MC"</span>)</span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>plt.grid()</span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>plt.legend(fontsize<span class="op">=</span><span class="dv">16</span>)</span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>plt.tick_params(labelsize<span class="op">=</span><span class="dv">16</span>)</span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"New visited state"</span>, fontsize<span class="op">=</span><span class="dv">20</span>)</span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Best reward"</span>, fontsize<span class="op">=</span><span class="dv">20</span>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="01_benchmarking_files/figure-html/cell-10-output-1.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="01_benchmarking_files/figure-html/cell-10-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<p>In these plots we see the progress that the different agents do towards the goal. In the first one, we see how close are the agents to the optimal relaxation, on average, with every new step they take. This allows us to see how the different agents explore the constraint-space. For instance, we see a clear collective trend in the BFS exploration, as they all follow a similar exploration strategy.</p>
+<p>The second plot provides a clearer idea of the progress towards the goal. In this case, we take the mean over all agents of their best ever reward. Hence, we obtain monotonic lines that show the ensemble progress towards the optimal relaxation: once they reach unit value it means that all agents have found the optimal relaxation. In our work, we use this information to compare the different optimization strategies in multiple scenarios, which we show below.</p>
+</section>
+</section>
+<section id="benchmarking-for-different-system-sizes" class="level1">
+<h1>Benchmarking for different system sizes</h1>
+<p>Here, we extend the study that we have shown up until now to several system sizes and budgets. This way, we can see how the different algorithms scale and where they excel or fail the most.</p>
+<p>We consider two budgets: one allowing half of the 3-body constraints and one allowing all the 3-body constraints.</p>
+<p>Execute either of the two cells below to set up the parameters. Beware that the simulations may take quite long and that you may have to adapt the <code>jobs</code> parameter (number of parallel threads) such that the task fits into your CPU and GPU. Benchmarks up to <span class="math inline">\(N=14\)</span> take reasonable time. We plot the results in the <em>04_plots.ipynb</em> notebook, with the rest of the paper plots.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>file_suffix <span class="op">=</span> <span class="st">"half_3"</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>configs <span class="op">=</span> {<span class="dv">5</span>:  {<span class="st">'opt'</span>: (<span class="op">-</span><span class="fl">7.4721</span>, <span class="dv">79</span>),   <span class="st">'worst'</span>: <span class="dv">132</span>, <span class="st">'max_limit'</span>: <span class="dv">135</span>, <span class="st">'episodes'</span>: <span class="dv">100</span>, <span class="st">'decay'</span>: <span class="fl">0.5</span>, <span class="st">'jobs'</span>: <span class="dv">17</span>},</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>           <span class="dv">6</span>:  {<span class="st">'opt'</span>: (<span class="op">-</span><span class="fl">10.9443</span>, <span class="dv">127</span>), <span class="st">'worst'</span>: <span class="dv">180</span>, <span class="st">'max_limit'</span>: <span class="dv">185</span>, <span class="st">'episodes'</span>: <span class="dv">200</span>, <span class="st">'decay'</span>: <span class="fl">0.5</span>, <span class="st">'jobs'</span>: <span class="dv">17</span>},</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>           <span class="dv">7</span>:  {<span class="st">'opt'</span>: (<span class="op">-</span><span class="fl">11.9443</span>, <span class="dv">131</span>), <span class="st">'worst'</span>: <span class="dv">192</span>, <span class="st">'max_limit'</span>: <span class="dv">195</span>, <span class="st">'episodes'</span>: <span class="dv">200</span>, <span class="st">'decay'</span>: <span class="fl">0.5</span>, <span class="st">'jobs'</span>: <span class="dv">17</span>},</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>           <span class="dv">8</span>:  {<span class="st">'opt'</span>: (<span class="op">-</span><span class="fl">12.9443</span>, <span class="dv">143</span>), <span class="st">'worst'</span>: <span class="dv">240</span>, <span class="st">'max_limit'</span>: <span class="dv">245</span>, <span class="st">'episodes'</span>: <span class="dv">375</span>, <span class="st">'decay'</span>: <span class="fl">0.95</span>, <span class="st">'jobs'</span>: <span class="dv">17</span>},</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>           <span class="dv">9</span>:  {<span class="st">'opt'</span>: (<span class="op">-</span><span class="fl">16.4164</span>, <span class="dv">191</span>), <span class="st">'worst'</span>: <span class="dv">252</span>, <span class="st">'max_limit'</span>: <span class="dv">255</span>, <span class="st">'episodes'</span>: <span class="dv">375</span>, <span class="st">'decay'</span>: <span class="fl">0.95</span>, <span class="st">'jobs'</span>: <span class="dv">17</span>},</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>           <span class="dv">10</span>: {<span class="st">'opt'</span>: (<span class="op">-</span><span class="fl">17.4164</span>, <span class="dv">195</span>), <span class="st">'worst'</span>: <span class="dv">300</span>, <span class="st">'max_limit'</span>: <span class="dv">305</span>, <span class="st">'episodes'</span>: <span class="dv">375</span>, <span class="st">'decay'</span>: <span class="fl">0.95</span>, <span class="st">'jobs'</span>: <span class="dv">17</span>},</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>           <span class="dv">11</span>: {<span class="st">'opt'</span>: (<span class="op">-</span><span class="fl">18.4164</span>, <span class="dv">207</span>), <span class="st">'worst'</span>: <span class="dv">312</span>, <span class="st">'max_limit'</span>: <span class="dv">315</span>, <span class="st">'episodes'</span>: <span class="dv">450</span>, <span class="st">'decay'</span>: <span class="fl">0.95</span>, <span class="st">'jobs'</span>: <span class="dv">17</span>},</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>           <span class="dv">12</span>: {<span class="st">'opt'</span>: (<span class="op">-</span><span class="fl">21.8885</span>, <span class="dv">255</span>), <span class="st">'worst'</span>: <span class="dv">360</span>, <span class="st">'max_limit'</span>: <span class="dv">365</span>, <span class="st">'episodes'</span>: <span class="dv">500</span>, <span class="st">'decay'</span>: <span class="fl">0.95</span>, <span class="st">'jobs'</span>: <span class="dv">17</span>},</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>           <span class="dv">13</span>: {<span class="st">'opt'</span>: (<span class="op">-</span><span class="fl">22.8885</span>, <span class="dv">259</span>), <span class="st">'worst'</span>: <span class="dv">372</span>, <span class="st">'max_limit'</span>: <span class="dv">375</span>, <span class="st">'episodes'</span>: <span class="dv">500</span>, <span class="st">'decay'</span>: <span class="fl">0.95</span>, <span class="st">'jobs'</span>: <span class="dv">17</span>},</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>           <span class="dv">14</span>: {<span class="st">'opt'</span>: (<span class="op">-</span><span class="fl">23.8885</span>, <span class="dv">271</span>), <span class="st">'worst'</span>: <span class="dv">420</span>, <span class="st">'max_limit'</span>: <span class="dv">425</span>, <span class="st">'episodes'</span>: <span class="dv">675</span>, <span class="st">'decay'</span>: <span class="fl">0.95</span>, <span class="st">'jobs'</span>: <span class="dv">17</span>},</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>           <span class="dv">15</span>: {<span class="st">'opt'</span>: (<span class="op">-</span><span class="fl">27.3607</span>, <span class="dv">319</span>), <span class="st">'worst'</span>: <span class="dv">432</span>, <span class="st">'max_limit'</span>: <span class="dv">435</span>, <span class="st">'episodes'</span>: <span class="dv">675</span>, <span class="st">'decay'</span>: <span class="fl">0.95</span>, <span class="st">'jobs'</span>: <span class="dv">17</span>},</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>           <span class="dv">16</span>: {<span class="st">'opt'</span>: (<span class="op">-</span><span class="fl">28.3607</span>, <span class="dv">323</span>), <span class="st">'worst'</span>: <span class="dv">480</span>, <span class="st">'max_limit'</span>: <span class="dv">485</span>, <span class="st">'episodes'</span>: <span class="dv">700</span>, <span class="st">'decay'</span>: <span class="fl">0.95</span>, <span class="st">'jobs'</span>: <span class="dv">17</span>},</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>           <span class="dv">17</span>: {<span class="st">'opt'</span>: (<span class="op">-</span><span class="fl">29.3607</span>, <span class="dv">335</span>), <span class="st">'worst'</span>: <span class="dv">492</span>, <span class="st">'max_limit'</span>: <span class="dv">500</span>, <span class="st">'episodes'</span>: <span class="dv">800</span>, <span class="st">'decay'</span>: <span class="fl">0.98</span>, <span class="st">'jobs'</span>: <span class="dv">17</span>},</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>           <span class="dv">18</span>: {<span class="st">'opt'</span>: (<span class="op">-</span><span class="fl">32.8328</span>, <span class="dv">383</span>), <span class="st">'worst'</span>: <span class="dv">540</span>, <span class="st">'max_limit'</span>: <span class="dv">545</span>, <span class="st">'episodes'</span>: <span class="dv">750</span>, <span class="st">'decay'</span>: <span class="fl">0.98</span>, <span class="st">'jobs'</span>: <span class="dv">15</span>},</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>           <span class="dv">19</span>: {<span class="st">'opt'</span>: (<span class="op">-</span><span class="fl">33.8328</span>, <span class="dv">383</span>), <span class="st">'worst'</span>: <span class="dv">552</span>, <span class="st">'max_limit'</span>: <span class="dv">555</span>, <span class="st">'episodes'</span>: <span class="dv">750</span>, <span class="st">'decay'</span>: <span class="fl">0.98</span>, <span class="st">'jobs'</span>: <span class="dv">15</span>}</span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>           }</span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>temp <span class="op">=</span> <span class="fl">0.084</span> <span class="co"># Monte Carlo temperature</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>file_suffix <span class="op">=</span> <span class="st">"all_3"</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>configs <span class="op">=</span> {<span class="dv">5</span>:  {<span class="st">'opt'</span>: (<span class="op">-</span><span class="fl">7.4721</span>, <span class="dv">79</span>),   <span class="st">'worst'</span>: <span class="dv">240</span>, <span class="st">'max_limit'</span>: <span class="dv">245</span>, <span class="st">'episodes'</span>: <span class="dv">100</span>, <span class="st">'decay'</span>: <span class="fl">0.5</span>, <span class="st">'jobs'</span>: <span class="dv">17</span>},</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>           <span class="dv">6</span>:  {<span class="st">'opt'</span>: (<span class="op">-</span><span class="fl">10.9443</span>, <span class="dv">127</span>), <span class="st">'worst'</span>: <span class="dv">288</span>, <span class="st">'max_limit'</span>: <span class="dv">300</span>, <span class="st">'episodes'</span>: <span class="dv">200</span>, <span class="st">'decay'</span>: <span class="fl">0.5</span>, <span class="st">'jobs'</span>: <span class="dv">17</span>},</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>           <span class="dv">7</span>:  {<span class="st">'opt'</span>: (<span class="op">-</span><span class="fl">11.9443</span>, <span class="dv">131</span>), <span class="st">'worst'</span>: <span class="dv">336</span>, <span class="st">'max_limit'</span>: <span class="dv">340</span>, <span class="st">'episodes'</span>: <span class="dv">200</span>, <span class="st">'decay'</span>: <span class="fl">0.5</span>, <span class="st">'jobs'</span>: <span class="dv">17</span>},</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>           <span class="dv">8</span>:  {<span class="st">'opt'</span>: (<span class="op">-</span><span class="fl">12.9443</span>, <span class="dv">143</span>), <span class="st">'worst'</span>: <span class="dv">385</span>, <span class="st">'max_limit'</span>: <span class="dv">385</span>, <span class="st">'episodes'</span>: <span class="dv">400</span>, <span class="st">'decay'</span>: <span class="fl">0.95</span>, <span class="st">'jobs'</span>: <span class="dv">17</span>},</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>           <span class="dv">9</span>:  {<span class="st">'opt'</span>: (<span class="op">-</span><span class="fl">16.4164</span>, <span class="dv">191</span>), <span class="st">'worst'</span>: <span class="dv">432</span>, <span class="st">'max_limit'</span>: <span class="dv">435</span>, <span class="st">'episodes'</span>: <span class="dv">400</span>, <span class="st">'decay'</span>: <span class="fl">0.95</span>, <span class="st">'jobs'</span>: <span class="dv">17</span>},</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>           <span class="dv">10</span>: {<span class="st">'opt'</span>: (<span class="op">-</span><span class="fl">17.4164</span>, <span class="dv">195</span>), <span class="st">'worst'</span>: <span class="dv">480</span>, <span class="st">'max_limit'</span>: <span class="dv">485</span>, <span class="st">'episodes'</span>: <span class="dv">400</span>, <span class="st">'decay'</span>: <span class="fl">0.95</span>, <span class="st">'jobs'</span>: <span class="dv">17</span>},</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>           <span class="dv">11</span>: {<span class="st">'opt'</span>: (<span class="op">-</span><span class="fl">18.4164</span>, <span class="dv">207</span>), <span class="st">'worst'</span>: <span class="dv">528</span>, <span class="st">'max_limit'</span>: <span class="dv">530</span>, <span class="st">'episodes'</span>: <span class="dv">500</span>, <span class="st">'decay'</span>: <span class="fl">0.95</span>, <span class="st">'jobs'</span>: <span class="dv">17</span>},</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>           <span class="dv">12</span>: {<span class="st">'opt'</span>: (<span class="op">-</span><span class="fl">21.8885</span>, <span class="dv">255</span>), <span class="st">'worst'</span>: <span class="dv">576</span>, <span class="st">'max_limit'</span>: <span class="dv">580</span>, <span class="st">'episodes'</span>: <span class="dv">600</span>, <span class="st">'decay'</span>: <span class="fl">0.95</span>, <span class="st">'jobs'</span>: <span class="dv">17</span>},</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>           <span class="dv">13</span>: {<span class="st">'opt'</span>: (<span class="op">-</span><span class="fl">22.8885</span>, <span class="dv">259</span>), <span class="st">'worst'</span>: <span class="dv">624</span>, <span class="st">'max_limit'</span>: <span class="dv">625</span>, <span class="st">'episodes'</span>: <span class="dv">600</span>, <span class="st">'decay'</span>: <span class="fl">0.95</span>, <span class="st">'jobs'</span>: <span class="dv">17</span>},</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>           <span class="dv">14</span>: {<span class="st">'opt'</span>: (<span class="op">-</span><span class="fl">23.8885</span>, <span class="dv">271</span>), <span class="st">'worst'</span>: <span class="dv">672</span>, <span class="st">'max_limit'</span>: <span class="dv">675</span>, <span class="st">'episodes'</span>: <span class="dv">1000</span>, <span class="st">'decay'</span>: <span class="fl">0.95</span>, <span class="st">'jobs'</span>: <span class="dv">17</span>},</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>           <span class="dv">15</span>: {<span class="st">'opt'</span>: (<span class="op">-</span><span class="fl">27.3607</span>, <span class="dv">319</span>), <span class="st">'worst'</span>: <span class="dv">720</span>, <span class="st">'max_limit'</span>: <span class="dv">725</span>, <span class="st">'episodes'</span>: <span class="dv">1100</span>, <span class="st">'decay'</span>: <span class="fl">0.95</span>, <span class="st">'jobs'</span>: <span class="dv">17</span>},</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>           <span class="dv">16</span>: {<span class="st">'opt'</span>: (<span class="op">-</span><span class="fl">28.3607</span>, <span class="dv">323</span>), <span class="st">'worst'</span>: <span class="dv">768</span>, <span class="st">'max_limit'</span>: <span class="dv">770</span>, <span class="st">'episodes'</span>: <span class="dv">1100</span>, <span class="st">'decay'</span>: <span class="fl">0.95</span>, <span class="st">'jobs'</span>: <span class="dv">17</span>},</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>           <span class="dv">17</span>: {<span class="st">'opt'</span>: (<span class="op">-</span><span class="fl">29.3607</span>, <span class="dv">335</span>), <span class="st">'worst'</span>: <span class="dv">816</span>, <span class="st">'max_limit'</span>: <span class="dv">820</span>, <span class="st">'episodes'</span>: <span class="dv">1500</span>, <span class="st">'decay'</span>: <span class="fl">0.98</span>, <span class="st">'jobs'</span>: <span class="dv">17</span>},</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>           }</span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>temp <span class="op">=</span> <span class="fl">0.097</span> <span class="co"># Monte Carlo temperature</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>Ns <span class="op">=</span> np.arange(<span class="dv">5</span>, <span class="dv">17</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>n_agents <span class="op">=</span> <span class="dv">60</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>lr <span class="op">=</span> <span class="fl">5e-3</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>bm <span class="op">=</span> <span class="dv">20</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>eps_0 <span class="op">=</span> <span class="fl">0.9</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> N <span class="kw">in</span> tqdm(Ns):</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>    N <span class="op">=</span> <span class="bu">int</span>(N)</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>    config <span class="op">=</span> configs[N]</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>    B, J <span class="op">=</span> <span class="dv">1</span>, [i<span class="op">%</span><span class="dv">3</span> <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(N)]</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>    H <span class="op">=</span> XXHamiltonian(Chain1D(N), B, J)</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>    budget <span class="op">=</span> config[<span class="st">'max_limit'</span>]</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>    env <span class="op">=</span> SdPEnvironment(H, SdPEnergySolver(), budget)</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>    episodes, eps_decay, n_jobs <span class="op">=</span> config[<span class="st">'episodes'</span>], config[<span class="st">'decay'</span>], config[<span class="st">'jobs'</span>]</span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>    opt, worst <span class="op">=</span> config[<span class="st">'opt'</span>], config[<span class="st">'worst'</span>]</span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>    time_steps <span class="op">=</span> <span class="bu">int</span>(<span class="fl">1.1</span><span class="op">*</span>N)</span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>    batch_size <span class="op">=</span> time_steps<span class="op">*</span>bm</span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>    best_ref <span class="op">=</span> np.array([<span class="op">*</span>opt, worst])</span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>    max_states <span class="op">=</span> <span class="bu">int</span>(episodes<span class="op">*</span>time_steps<span class="op">*</span><span class="fl">0.35</span>) <span class="co"># Maximum number of states allowed for MC and BFS</span></span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Monte Carlo optimization</span></span>
+<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a>    mc <span class="op">=</span> MCTrainer(env, n_agents<span class="op">=</span>n_agents, n_jobs<span class="op">=</span><span class="dv">17</span>, beta<span class="op">=</span>temp)</span>
+<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a>    mc_results <span class="op">=</span> mc.train(max_states, opt<span class="op">=</span>opt, best_ref<span class="op">=</span>best_ref, ckp<span class="op">=</span><span class="dv">5</span>, break_opt<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a>    save_benchmark(mc_results, N, H, <span class="st">'MC'</span>, suffix<span class="op">=</span>file_suffix)</span>
+<span id="cb15-28"><a href="#cb15-28" aria-hidden="true" tabindex="-1"></a>    <span class="kw">del</span> mc<span class="op">;</span> <span class="kw">del</span> mc_results</span>
+<span id="cb15-29"><a href="#cb15-29" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb15-30"><a href="#cb15-30" aria-hidden="true" tabindex="-1"></a>    <span class="co"># RL optimization</span></span>
+<span id="cb15-31"><a href="#cb15-31" aria-hidden="true" tabindex="-1"></a>    id0 <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb15-32"><a href="#cb15-32" aria-hidden="true" tabindex="-1"></a>    dqn <span class="op">=</span> DQNTrainer(env, n_agents<span class="op">=</span>n_agents, n_jobs<span class="op">=</span>n_jobs, learning_rate<span class="op">=</span>lr, </span>
+<span id="cb15-33"><a href="#cb15-33" aria-hidden="true" tabindex="-1"></a>                     batch_size<span class="op">=</span>batch_size, eps_decay<span class="op">=</span>eps_decay, eps_0<span class="op">=</span>eps_0)</span>
+<span id="cb15-34"><a href="#cb15-34" aria-hidden="true" tabindex="-1"></a>    dqn_results <span class="op">=</span> dqn.train(episodes, time_steps<span class="op">=</span>time_steps, opt<span class="op">=</span>opt, best_ref<span class="op">=</span>best_ref, ckp<span class="op">=</span><span class="dv">2</span>,</span>
+<span id="cb15-35"><a href="#cb15-35" aria-hidden="true" tabindex="-1"></a>                            id0<span class="op">=</span>id0, break_opt<span class="op">=</span><span class="va">True</span>, save<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb15-36"><a href="#cb15-36" aria-hidden="true" tabindex="-1"></a>    save_benchmark(dqn_results, N, H, <span class="st">'DQN'</span>, suffix<span class="op">=</span>file_suffix)</span>
+<span id="cb15-37"><a href="#cb15-37" aria-hidden="true" tabindex="-1"></a>    <span class="kw">del</span> dqn<span class="op">;</span> <span class="kw">del</span> dqn_results    </span>
+<span id="cb15-38"><a href="#cb15-38" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb15-39"><a href="#cb15-39" aria-hidden="true" tabindex="-1"></a>    <span class="co"># BFS</span></span>
+<span id="cb15-40"><a href="#cb15-40" aria-hidden="true" tabindex="-1"></a>    bfs <span class="op">=</span> BrFSTrainer(env, n_agents<span class="op">=</span>n_agents, n_jobs<span class="op">=</span>n_jobs)</span>
+<span id="cb15-41"><a href="#cb15-41" aria-hidden="true" tabindex="-1"></a>    bfs_results <span class="op">=</span> bfs.train(max_states, opt<span class="op">=</span>opt, best_ref<span class="op">=</span>best_ref, break_opt<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb15-42"><a href="#cb15-42" aria-hidden="true" tabindex="-1"></a>    save_benchmark(bfs_results, N, H, <span class="st">'BFS'</span>, suffix<span class="op">=</span>file_suffix)</span>
+<span id="cb15-43"><a href="#cb15-43" aria-hidden="true" tabindex="-1"></a>    <span class="kw">del</span> bfs<span class="op">;</span> <span class="kw">del</span> bfs_results</span>
+<span id="cb15-44"><a href="#cb15-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-45"><a href="#cb15-45" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Random walk        </span></span>
+<span id="cb15-46"><a href="#cb15-46" aria-hidden="true" tabindex="-1"></a><span class="co">#     rnd = MCTrainer(env, n_agents=n_agents, n_jobs=n_jobs, beta=10000)</span></span>
+<span id="cb15-47"><a href="#cb15-47" aria-hidden="true" tabindex="-1"></a><span class="co">#     rnd_results = rnd.train(max_states, opt=opt, best_ref=best_ref, break_opt=True)</span></span>
+<span id="cb15-48"><a href="#cb15-48" aria-hidden="true" tabindex="-1"></a><span class="co">#     save_benchmark(rnd_results, N, H, 'RND', suffix=file_suffix)</span></span>
+<span id="cb15-49"><a href="#cb15-49" aria-hidden="true" tabindex="-1"></a><span class="co">#     del rnd; del rnd_results</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

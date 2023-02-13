@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.335">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="This is the fourth notebook of a series of tutorials to use the BOUNCE library, which we developed for the Certificates of quantum many-body properties assisted by machine learning paper.">
+
+<title>bounce - Energy-based entanglement witnesses</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<script src="https://unpkg.com/@jupyter-widgets/html-manager@*/dist/embed-amd.js" crossorigin="anonymous"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<link rel="stylesheet" href="../styles.css">
+<meta property="og:title" content="bounce - Energy-based entanglement witnesses">
+<meta property="og:description" content="This is the fourth notebook of a series of tutorials to use the [BOUNCE library](https://borjarequena.github.">
+<meta property="og:site-name" content="bounce">
+<meta name="twitter:title" content="bounce - Energy-based entanglement witnesses">
+<meta name="twitter:description" content="This is the fourth notebook of a series of tutorials to use the [BOUNCE library](https://borjarequena.github.">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">bounce</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/BorjaRequena/bounce/"><i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">Energy-based entanglement witnesses</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">BOUNCE</a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">Documentation</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../source/environment.html" class="sidebar-item-text sidebar-link">Environment</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../source/agents.html" class="sidebar-item-text sidebar-link">Agents</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../source/hamiltonian.html" class="sidebar-item-text sidebar-link">Hamiltonian</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../source/sdp.html" class="sidebar-item-text sidebar-link">Semidefinite programming</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../source/training.html" class="sidebar-item-text sidebar-link">Training</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../source/utils.html" class="sidebar-item-text sidebar-link">Utils</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">Tutorials</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorial/introduction.html" class="sidebar-item-text sidebar-link">Constraint optimization with reinforcement learning</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorial/benchmarking.html" class="sidebar-item-text sidebar-link">Benchmarking agents</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorial/transfer_learning.html" class="sidebar-item-text sidebar-link">Transfer learning</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorial/entanglement_witnessing.html" class="sidebar-item-text sidebar-link active">Energy-based entanglement witnesses</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorial/plots.html" class="sidebar-item-text sidebar-link">Plots</a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#case-of-study-the-physical-system" id="toc-case-of-study-the-physical-system" class="nav-link" data-scroll-target="#case-of-study-the-physical-system">Case of study: the physical system</a></li>
+  <li><a href="#obtaining-exact-bounds" id="toc-obtaining-exact-bounds" class="nav-link" data-scroll-target="#obtaining-exact-bounds">Obtaining exact bounds</a></li>
+  <li><a href="#beyond-analytical-solutions" id="toc-beyond-analytical-solutions" class="nav-link" data-scroll-target="#beyond-analytical-solutions">Beyond analytical solutions</a>
+  <ul class="collapse">
+  <li><a href="#quick-test" id="toc-quick-test" class="nav-link" data-scroll-target="#quick-test">Quick test</a></li>
+  <li><a href="#exhaustive-search" id="toc-exhaustive-search" class="nav-link" data-scroll-target="#exhaustive-search">Exhaustive search</a></li>
+  <li><a href="#result-analysis" id="toc-result-analysis" class="nav-link" data-scroll-target="#result-analysis">Result analysis</a>
+  <ul class="collapse">
+  <li><a href="#exploration-results" id="toc-exploration-results" class="nav-link" data-scroll-target="#exploration-results">Exploration results</a></li>
+  <li><a href="#constraint-statistics-frequency" id="toc-constraint-statistics-frequency" class="nav-link" data-scroll-target="#constraint-statistics-frequency">Constraint statistics: frequency</a></li>
+  <li><a href="#constraint-statistics-bounds" id="toc-constraint-statistics-bounds" class="nav-link" data-scroll-target="#constraint-statistics-bounds">Constraint statistics: bounds</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/BorjaRequena/bounce/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block">Energy-based entanglement witnesses</h1>
+</div>
+
+<div>
+  <div class="description">
+    This is the fourth notebook of a series of tutorials to use the <a href="https://borjarequena.github.io/bounce/">BOUNCE library</a>, which we developed for the <a href="https://journals.aps.org/prresearch/abstract/10.1103/PhysRevResearch.5.013097">Certificates of quantum many-body properties assisted by machine learning</a> paper.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+<p>A key property of quantum systems is entanglement. In order to determine whether a system is entangled or not, we need to find whether its state belongs to the set of separable states. However, fully characterizing this set is extremely hard and we rely on tools such as entanglement witnesses to solve this task.</p>
+<p>Such witnesses often rely on the expectation value of an observable whose result signals the presence of entanglement. For instance, in the case of energy-based witnesses, the expectation value is over the Hamiltonian. In this case, if we are able to find the minimum possible energy within the set of separable states <span class="math inline">\(E_{\text{sep}}\)</span>, we can build an entanglement witness in the following way. Let <span class="math display">\[\Delta E = \langle H\rangle - E_{\text{sep}}\,,\]</span> where <span class="math inline">\(\langle H\rangle=\text{Tr}\left[\rho H\right]\)</span> is the energy of an arbitrary state <span class="math inline">\(\rho\)</span>. If <span class="math inline">\(\Delta E &gt; 0\)</span>, it means that <span class="math inline">\(\rho\)</span> lies within the set of separable states. Conversely, if <span class="math inline">\(\Delta E&lt;0\)</span>, the energy obtained with <span class="math inline">\(\rho\)</span> is lower than <span class="math inline">\(E_{\text{sep}}\)</span> and, therefore, <span class="math inline">\(\rho\)</span> lies outside of the set of separable states meaning that it is entangled.</p>
+<p>Nevertheless, finding <span class="math inline">\(E_{\text{sep}}\)</span> is, in general, a difficult task. Although there are analytical expressions for some specific cases <a href="https://journals.aps.org/pra/abstract/10.1103/PhysRevA.71.010301">[1]</a>, we usually rely on approximate methods, such as relaxation methods to estimate <span class="math inline">\(E_{\text{sep}}\)</span>. In this case, we relax the minimization problem of finding the minimum energy over the set of separable states to, instead, imposing that the states are positive under partial transposition (PPT) <a href="https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.77.1413">[2]</a>. The set of PPT states is larger than the set of separable states and, therefore, we obtain a lower bound of <span class="math inline">\(E_{\text{sep}}\)</span>. However, the tighter the bound, the better our witness as we can identify more entangled states.</p>
+</section>
+<section id="case-of-study-the-physical-system" class="level1">
+<h1>Case of study: the physical system</h1>
+<p>We consider the <a href="https://BorjaRequena.github.io/bounce/source/hamiltonian.html#xxhamiltonian"><code>XXHamiltonian</code></a> of the form <span class="math display">\[H=\sum_{i} J_{i}(\sigma_{i}^x \sigma_{i+1}^x + \sigma_{i}^y \sigma_{i+1}^y) + \sum_{i}B_{i}\sigma_{i}^z\,.\]</span> In the case of homogeneous field and couplings, <span class="math inline">\(B_i=B, J_i=J\, \forall i\)</span>, there have been derived analytical expressions for entanglement witnesses <a href="https://journals.aps.org/pra/abstract/10.1103/PhysRevA.71.010301">[1]</a> that we use to validate our results.</p>
+</section>
+<section id="obtaining-exact-bounds" class="level1">
+<h1>Obtaining exact bounds</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> exact_XX_sep_bound(N, B, J, d):</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"Minimum energy for separable states in the XX model."</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    b <span class="op">=</span> B<span class="op">/</span>J<span class="op">/</span>d</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> b <span class="op">&lt;=</span> <span class="dv">2</span>:</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="op">-</span>d<span class="op">*</span>N<span class="op">*</span>J<span class="op">*</span>(<span class="dv">1</span><span class="op">+</span>b<span class="op">**</span><span class="dv">2</span><span class="op">/</span><span class="dv">4</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="op">-</span>d<span class="op">*</span>N<span class="op">*</span>J<span class="op">*</span>b</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Let’s start with a simple one-dimensional system. In this case, the PPT criterion is exact and we can quickly recover the exact solutions.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">6</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>chain <span class="op">=</span> Chain1D(N)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>This Hamiltonian presents a phase transition at <span class="math inline">\(B/J=2\)</span>. When the external field dominates, the ground state is separable, whereas it is entangled in the opposite phase. Let’s see what we obtain with a separable ground state.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>b, j <span class="op">=</span> <span class="dv">4</span>, <span class="dv">1</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>H <span class="op">=</span> XXHamiltonian(chain, b, j)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>solver_sep <span class="op">=</span> SdPWitnessSolver()</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>budget <span class="op">=</span> <span class="dv">185</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>env <span class="op">=</span> SdPEnvironment(H, solver_sep, budget)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We start with a trivial relaxation (no compatibility constraints) and see what we obtain.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>env.layout</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[array([0]), array([1]), array([2]), array([3]), array([4]), array([5])]</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>trivial_bound <span class="op">=</span> env.bound</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>exact_bound <span class="op">=</span> exact_XX_sep_bound(N, b, j, <span class="dv">1</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"The trivial bound is </span><span class="sc">{</span>trivial_bound<span class="sc">:.3f}</span><span class="ss"> and the exact is </span><span class="sc">{</span>exact_bound<span class="sc">:.3f}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>The trivial bound is -36.000 and the exact is -24.000</code></pre>
+</div>
+</div>
+<p>The trivial bound is far off the exact value. However, we recover the exact value by just imposing two-body compatibility contraints.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>env.state[:N] <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>env.layout</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[array([0, 1]),
+ array([1, 2]),
+ array([2, 3]),
+ array([3, 4]),
+ array([4, 5]),
+ array([0, 5])]</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>bound <span class="op">=</span> env.bound</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"The obtained bound is </span><span class="sc">{</span>bound<span class="sc">:.3f}</span><span class="ss"> and the exact is </span><span class="sc">{</span>exact_bound<span class="sc">:.3f}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>The obtained bound is -24.000 and the exact is -24.000</code></pre>
+</div>
+</div>
+<p>Furthermore, as we have seen in the previous calculations and in <a href="https://journals.aps.org/prresearch/abstract/10.1103/PhysRevResearch.5.013097">[3]</a>, these are all the constraints we need to recover the exact ground state energy in this phase.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>solver_gs <span class="op">=</span> SdPEnergySolver()</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>gs_energy <span class="op">=</span> solver_gs.solve(H.to_sdp(), env.layout)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"The ground state energy is </span><span class="sc">{</span>gs_energy<span class="sc">:.3f}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>The ground state energy is -24.000</code></pre>
+</div>
+</div>
+<p>Given that the ground state energy matches the separability bound, we can conclude that the ground state is separable!</p>
+<p>Let’s do a rough exploration of the phase diagram with these methods.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>bs <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">4</span>, <span class="dv">21</span>)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>energy_sep, energy_gs, exact_sep <span class="op">=</span> [], [], []</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> b <span class="kw">in</span> tqdm(bs):</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    H <span class="op">=</span> XXHamiltonian(chain, b, j)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    energy_sep.append(solver_sep.solve(H.to_sdp(), env.layout))</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    energy_gs.append(solver_gs.solve(H.to_sdp(), env.layout))</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    exact_sep.append(exact_XX_sep_bound(N, b, j, <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"7ac34a753da4416abd29793122ac3913","version_major":2,"version_minor":0}
+</script>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>plt.plot(bs, energy_sep, linewidth<span class="op">=</span><span class="dv">4</span>, label<span class="op">=</span><span class="st">'separable bound'</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>plt.plot(bs, energy_gs, linewidth<span class="op">=</span><span class="dv">4</span>, label<span class="op">=</span><span class="st">'ground state bound'</span>)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>plt.plot(bs, exact_sep, <span class="st">'--'</span>, color<span class="op">=</span><span class="st">'k'</span>, label<span class="op">=</span><span class="st">'exact separable bound'</span>)</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>plt.grid()</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>plt.legend(fontsize<span class="op">=</span><span class="dv">12</span>)</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>plt.tick_params(labelsize<span class="op">=</span><span class="dv">12</span>)</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Field relative strength (B/J)'</span>, fontsize<span class="op">=</span><span class="dv">14</span>)</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Energy bounds'</span>, fontsize<span class="op">=</span><span class="dv">14</span>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="03_entanglement_witnessing_files/figure-html/cell-11-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">5</span>, <span class="fl">3.5</span>))</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>plt.plot(bs, np.array(energy_sep)<span class="op">/</span>N, <span class="st">'o-'</span>, linewidth<span class="op">=</span><span class="dv">1</span>, label<span class="op">=</span><span class="st">'separability bound'</span>, zorder<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>plt.plot(bs, np.array(exact_sep)<span class="op">/</span>N, <span class="st">'--'</span>, color<span class="op">=</span><span class="st">'k'</span>, linewidth<span class="op">=</span><span class="dv">3</span>, label<span class="op">=</span><span class="st">'exact separability bound'</span>, zorder<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>plt.grid()</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>plt.legend(fontsize<span class="op">=</span><span class="dv">12</span>)</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>plt.tick_params(labelsize<span class="op">=</span><span class="dv">12</span>)</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'B/J'</span>, fontsize<span class="op">=</span><span class="dv">14</span>)</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Separability bound per spin'</span>, fontsize<span class="op">=</span><span class="dv">14</span>)<span class="op">;</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.savefig("../figures/witness_exact.pdf", bbox_inches="tight");</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="03_entanglement_witnessing_files/figure-html/cell-12-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p>We observe that both bounds match at <span class="math inline">\(B/J\geq2\)</span>, meaning that the ground state in that phase is separable. In the opposite phase, we may be tempted to claim that the ground state is entangled from this plot. While we know it is, the ground state bound is a <em>lower</em> bound, meaning that the ground state energy lies beyond the line but we do not know how far it is. From previous results, we also know that this relaxation based on two-body constraints is quite bad for this phase.</p>
+<p>In order to properly assess whether the phase at <span class="math inline">\(B/J&lt;2\)</span> is entangled, we should use a variational method to find the ground state energy of the system. Variational methods provide <em>upper</em> bounds and, hence, if the upper bound for the ground state lies below the lower bound for separable states we can confidently say that the ground state is entangled.</p>
+</section>
+<section id="beyond-analytical-solutions" class="level1">
+<h1>Beyond analytical solutions</h1>
+<p>In the previous example above, we have solved a simple system with an analytical solution for the separable bound. In this case, the exact solution is recoverable by simply introducing two-body compatibility constraints in the associated semidefinite program (SdP). Introducing further constraints, we do not obtain any better bound and we simply increase the cost of solving our associated SdP.</p>
+<p>Let us now consider a more challenging scenario in which the Hamiltonian is not homogeneous. Thus, we do not have any analytical proof of reference. In this case, imposing some constraints we may obtain better bounds than with others of similar cost. Therefore, it is crucial to properly explore the constraint space to find the best possible relaxation within some computational limitations.</p>
+<p>For this experiment, we consider a square lattice with random fields and couplings.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>N, M <span class="op">=</span> <span class="dv">3</span>, <span class="dv">3</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>graph <span class="op">=</span> SquareLattice(N, M)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">0</span>)</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>b, j <span class="op">=</span> np.random.rand(N<span class="op">*</span>M), np.random.rand(N<span class="op">*</span>M)</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>H <span class="op">=</span> XXHamiltonian(graph, b, j)</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>H.draw()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="03_entanglement_witnessing_files/figure-html/cell-13-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p>The goal now is to find the best possible separable bound. Since the number of possible constraints is very large, we restrict our search to exclusively use single body, two-body and three-body constraints, despite the computational budget.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>solver_sep <span class="op">=</span> SdPWitnessSolver()</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>budget <span class="op">=</span> <span class="dv">490</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>max_size <span class="op">=</span> <span class="dv">3</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>env <span class="op">=</span> SdPEnvironment(H, solver_sep, budget, max_basis_size<span class="op">=</span><span class="dv">3</span>)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>env.show_constraints()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>2: [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+3: [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0]</code></pre>
+</div>
+</div>
+<p>Let’s see first the bound we obtain simply using two-body constraints.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>env.state[:<span class="dv">18</span>] <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>env.show_constraints()</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"The separable bound is </span><span class="sc">{</span>env<span class="sc">.</span>bound<span class="sc">:.4f}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>2: [1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1]
+3: [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0]
+The separable bound is -9.6186</code></pre>
+</div>
+</div>
+<section id="quick-test" class="level2">
+<h2 class="anchored" data-anchor-id="quick-test">Quick test</h2>
+<p>In such a random system, the contribution of larger constraints can vary significantly. We perform a simple test in which we allocate all the possible three-body constraints alone filling the rest with two-body ones.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> tqdm(<span class="bu">range</span>(<span class="dv">18</span>, <span class="bu">len</span>(env.state))):</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>    env.reset()</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    env.state[:<span class="dv">18</span>] <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>    env.state[i] <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>env<span class="sc">.</span>layout_basis[i]<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>env<span class="sc">.</span>bound<span class="sc">:.4f}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"87f54a4835d04fdbb1345a115f721bd3","version_major":2,"version_minor":0}
+</script>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[0 1 3] -9.6186
+[0 1 2] -8.9952
+[0 1 4] -9.6186
+[0 1 6] -9.6186
+[0 1 7] -9.6186
+[0 2 3] -9.6186
+[0 3 4] -9.6186
+[0 3 6] -9.5821
+[0 3 5] -9.6186
+[1 2 4] -9.6186
+[1 2 5] -9.6186
+[1 2 7] -9.6186
+[1 2 8] -9.6186
+[1 3 4] -9.6186
+[1 4 5] -9.6186
+[1 4 7] -9.5038
+[0 2 5] -9.6186
+[0 2 6] -9.6186
+[0 2 8] -9.6186
+[2 4 5] -9.6186
+[2 3 5] -9.6186
+[2 5 8] -9.4889
+[3 4 6] -9.6186
+[3 4 5] -9.4597
+[3 4 7] -9.6186
+[3 5 6] -9.6186
+[3 6 7] -9.6186
+[3 6 8] -9.6186
+[4 5 7] -9.6186
+[4 5 8] -9.6186
+[4 6 7] -9.6186
+[4 7 8] -9.6186
+[3 5 8] -9.6186
+[5 7 8] -9.6186
+[5 6 8] -9.6186
+[0 6 7] -9.6186
+[6 7 8] -9.5872
+[1 6 7] -9.6186
+[0 6 8] -9.6186
+[1 7 8] -9.6186
+[2 7 8] -9.6186
+[2 6 8] -9.6186</code></pre>
+</div>
+</div>
+<p>Most of them barely have any effect, while just a few have a very high impact. Let’s explore this with an agent and see what is the best possible bound it can find.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>env <span class="op">=</span> SdPEnvironment(H, solver_sep, budget, max_basis_size<span class="op">=</span><span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>dqn <span class="op">=</span> DQNTrainer(env)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>results_dqn <span class="op">=</span> dqn.train(<span class="dv">300</span>, time_steps<span class="op">=</span><span class="dv">15</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"9300375e925f4cc89d40465341f713e4","version_major":2,"version_minor":0}
+</script>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>plot_exploration(results_dqn[<span class="st">'exploration'</span>], expl_optims<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="03_entanglement_witnessing_files/figure-html/cell-21-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+</section>
+<section id="exhaustive-search" class="level2">
+<h2 class="anchored" data-anchor-id="exhaustive-search">Exhaustive search</h2>
+<p>Let’s now throw several agents for various budgets and see what are the best separable bounds that we can find.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>solver_sep <span class="op">=</span> SdPWitnessSolver()</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>budgets <span class="op">=</span> [<span class="dv">390</span>, <span class="dv">470</span>, <span class="dv">490</span>, <span class="dv">540</span>]</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>eps_decays <span class="op">=</span> [<span class="fl">0.98</span>, <span class="fl">0.98</span>, <span class="fl">0.99</span>, <span class="fl">0.99</span>]</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>episodes <span class="op">=</span> <span class="dv">600</span></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>n_agents, n_jobs <span class="op">=</span> <span class="dv">50</span>, <span class="dv">15</span></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>results_dqn <span class="op">=</span> []</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> budget, decay <span class="kw">in</span> tqdm(<span class="bu">zip</span>(budgets, eps_decays)):</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>    env <span class="op">=</span> SdPEnvironment(H, solver_sep, budget, max_basis_size<span class="op">=</span><span class="dv">3</span>, initial_size<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>    dqn <span class="op">=</span> DQNTrainer(env, n_agents<span class="op">=</span>n_agents, n_jobs<span class="op">=</span>n_jobs, eps_decay<span class="op">=</span>decay, batch_size<span class="op">=</span><span class="dv">256</span>)</span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>    results_budget <span class="op">=</span> dqn.train(episodes, time_steps<span class="op">=</span><span class="dv">15</span>, ckp<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>    results_dqn.append(results_budget)</span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a><span class="co">#     with open(f'../benchmarks/witness_lattice_dqn_{budget}.pkl', 'wb') as f:</span></span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a><span class="co">#         pickle.dump(results_budget, f, protocol=pickle.HIGHEST_PROTOCOL)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"fd652bdfac05434e90736fe99a57213c","version_major":2,"version_minor":0}
+</script>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># with open('../benchmarks/witness_lattice_dqn.pkl', 'wb') as f:</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="co">#     pickle.dump(results_dqn, f, protocol=pickle.HIGHEST_PROTOCOL)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="result-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="result-analysis">Result analysis</h2>
+<p>First of all, we start by loading the data.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(<span class="st">'../benchmarks/witness_lattice_dqn.pkl'</span>, <span class="st">'rb'</span>) <span class="im">as</span> f:</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>    results_dqn <span class="op">=</span> pickle.load(f)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="exploration-results" class="level3">
+<h3 class="anchored" data-anchor-id="exploration-results">Exploration results</h3>
+<p>Now we can look at an exploration example for a given budget to get a better understanding of the optimization process.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>plot_exploration(results_dqn[<span class="dv">2</span>][<span class="st">'exploration'</span>], expl_optims<span class="op">=</span><span class="va">False</span>, highlight_max<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="03_entanglement_witnessing_files/figure-html/cell-25-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p>Let’s plot the results for the different budgets</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> bounce.utils <span class="im">import</span> arrange_shape, best_so_far</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>labels <span class="op">=</span> [<span class="dv">7</span>, <span class="dv">8</span>, <span class="dv">9</span>, <span class="dv">10</span>]</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">5</span>))</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, results <span class="kw">in</span> <span class="bu">enumerate</span>(results_dqn[:<span class="op">-</span><span class="dv">1</span>]):</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>    bounds <span class="op">=</span> arrange_shape(results[<span class="st">'exploration'</span>][<span class="st">'bounds'</span>])</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>    best_bounds <span class="op">=</span> best_so_far(bounds).T</span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>    best_mean, best_max <span class="op">=</span> np.mean(best_bounds, axis<span class="op">=-</span><span class="dv">1</span>), np.<span class="bu">max</span>(best_bounds, axis<span class="op">=-</span><span class="dv">1</span>)</span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>    ax.plot(best_max, color<span class="op">=</span><span class="ss">f'C</span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">'</span>, linewidth<span class="op">=</span><span class="dv">3</span>, label<span class="op">=</span>labels[i])</span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>    ax.plot(best_mean, color<span class="op">=</span><span class="ss">f'C</span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">'</span>, linewidth<span class="op">=</span><span class="dv">3</span>, linestyle<span class="op">=</span><span class="st">'dashed'</span>, alpha<span class="op">=</span><span class="fl">0.6</span>)</span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a>ax.grid()</span>
+<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a>ax.legend(fontsize<span class="op">=</span><span class="dv">17</span>)</span>
+<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a>ax.tick_params(labelsize<span class="op">=</span><span class="dv">17</span>)</span>
+<span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"Separability bound"</span>, fontsize<span class="op">=</span><span class="dv">21</span>)</span>
+<span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"New visited state"</span>, fontsize<span class="op">=</span><span class="dv">21</span>)</span>
+<span id="cb34-16"><a href="#cb34-16" aria-hidden="true" tabindex="-1"></a>plt.savefig(<span class="st">"../figures/witnesses_budget.pdf"</span>, bbox_inches<span class="op">=</span><span class="st">'tight'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="03_entanglement_witnessing_files/figure-html/cell-27-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p>We can see a quick early raise in the best obtained bound followed by a stagnation period. This is the natural random exploration process, which is quite inefficient. Then, after about 1500 states, we observe a collective raise in the best bound, which is when the agents start exploiting the gathered knowledge to their advantage. This lines up with the end of the exploration phase, as we exponentially decrease the value of <span class="math inline">\(\varepsilon\)</span> in the policy, reaching its minimum between 100 and 200 episodes.</p>
+<p>We can have a look at the best layout that we have found for each budget.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>best_by_budget <span class="op">=</span> []</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> results <span class="kw">in</span> results_dqn:</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>    best_bound <span class="op">=</span> <span class="op">-</span>np.infty</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> env <span class="kw">in</span> results[<span class="st">'exploration'</span>][<span class="st">'envs'</span>]:</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>        bound, layout <span class="op">=</span> env.best[<span class="dv">0</span>], env.best_layout</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> bound <span class="op">&gt;</span> best_bound:</span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>            best_bound <span class="op">=</span> deepcopy(bound)</span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>            best_layout <span class="op">=</span> deepcopy(layout)</span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>    best_by_budget.append((best_bound, best_layout))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>best_by_budget</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[(-8.225026975813115,
+  [array([0, 6]),
+   array([0, 1, 2]),
+   array([0, 3, 5]),
+   array([1, 4, 7]),
+   array([0, 2, 5]),
+   array([2, 5, 8]),
+   array([3, 4, 5]),
+   array([6, 7, 8])]),
+ (-8.167977031639149,
+  [array([0, 1, 2]),
+   array([0, 3, 6]),
+   array([0, 3, 5]),
+   array([1, 4, 7]),
+   array([0, 2, 5]),
+   array([2, 5, 8]),
+   array([3, 4, 5]),
+   array([6, 7, 8])]),
+ (-8.148677351430782,
+  [array([3, 6]),
+   array([0, 1, 2]),
+   array([0, 1, 6]),
+   array([0, 2, 3]),
+   array([1, 4, 7]),
+   array([2, 3, 5]),
+   array([2, 5, 8]),
+   array([3, 4, 5]),
+   array([6, 7, 8]),
+   array([1, 6, 7])])]</code></pre>
+</div>
+</div>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Yep, this print right above here looks terrible and the information is rather hidden. We have used it to draw Figure 9 (b) in <a href="https://arxiv.org/abs/2103.03830">our paper</a>, better have a look there!</p>
+</div>
+</div>
+</section>
+<section id="constraint-statistics-frequency" class="level3">
+<h3 class="anchored" data-anchor-id="constraint-statistics-frequency">Constraint statistics: frequency</h3>
+<p>In order to get a deeper understanding of the problem, we can look at the similarities between the best results obtained by each agent. This way, we can see which are the most important constraints in our problem.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> element2str(element): <span class="cf">return</span> <span class="st">''</span>.join([<span class="bu">str</span>(i) <span class="cf">for</span> i <span class="kw">in</span> element])</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>element_index <span class="op">=</span> {element2str(element): k <span class="cf">for</span> k, element <span class="kw">in</span> <span class="bu">enumerate</span>(env.layout_basis)}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>hist_by_budget <span class="op">=</span> []</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> results <span class="kw">in</span> results_dqn[:<span class="op">-</span><span class="dv">1</span>]:</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>    element_bound <span class="op">=</span> {k: [] <span class="cf">for</span> k <span class="kw">in</span> element_index.keys()}</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> env <span class="kw">in</span> results[<span class="st">'exploration'</span>][<span class="st">'envs'</span>]:</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>        bound, layout <span class="op">=</span> env.best[<span class="dv">0</span>], env.best_layout</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> basis_element <span class="kw">in</span> layout:</span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>            element_bound[element2str(basis_element)] <span class="op">+=</span> [bound]</span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>    hist_by_budget.append(element_bound)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now we can look at the most used constraints. For instance, for the largest budget.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>idx_budget <span class="op">=</span> <span class="op">-</span><span class="dv">1</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>bounds_by_element <span class="op">=</span> hist_by_budget[idx_budget]</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> <span class="bu">list</span>(element_index.keys())</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>counts <span class="op">=</span> np.array([<span class="bu">len</span>(bounds_by_element[k]) <span class="cf">for</span> k <span class="kw">in</span> x])</span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>freq <span class="op">=</span> counts<span class="op">/</span>counts.<span class="bu">sum</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">15</span>, <span class="dv">4</span>))</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>plt.bar(x, freq)</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>plt.xticks(rotation<span class="op">=</span><span class="dv">75</span>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="03_entanglement_witnessing_files/figure-html/cell-33-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p>There are some clear 3-body terms that are overrepresented with respect to the rest: the <span class="math inline">\([0, 1, 2]\)</span>, the <span class="math inline">\([2, 5, 8]\)</span> and the <span class="math inline">\([3, 4, 5]\)</span>.</p>
+<p>We can look even further and check the frequency that every 2-body term is captured either by itself or by another 3-body term.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>counts_link <span class="op">=</span> {}</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> link <span class="kw">in</span> x[:<span class="dv">18</span>]:</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>    counts_link[link] <span class="op">=</span> <span class="bu">sum</span>([counts[element_index[k]] <span class="cf">for</span> k <span class="kw">in</span> element_index.keys()</span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>                             <span class="cf">if</span> np.<span class="bu">all</span>([l <span class="kw">in</span> k <span class="cf">for</span> l <span class="kw">in</span> link])])</span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>counts_link <span class="op">=</span> {k: v<span class="op">/</span><span class="bu">max</span>(counts_link.values()) <span class="cf">for</span> k, v <span class="kw">in</span> counts_link.items()}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>plt.bar(<span class="bu">list</span>(counts_link.keys()), <span class="bu">list</span>(counts_link.values()))<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<pre><code>&lt;BarContainer object of 18 artists&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="03_entanglement_witnessing_files/figure-html/cell-35-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<p>Again, we see a few elements that appear more often in the best obtained relaxations. We can bring the analysis even further by looking only at the <strong>top performing agents</strong>. Let’s do it!</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>bounds <span class="op">=</span> [env.best[<span class="dv">0</span>] <span class="cf">for</span> env <span class="kw">in</span> results_dqn[idx_budget][<span class="st">'exploration'</span>][<span class="st">'envs'</span>]]</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>idx_top <span class="op">=</span> np.argsort(bounds)[::<span class="op">-</span><span class="dv">1</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>top <span class="op">=</span> <span class="dv">10</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>element_bound <span class="op">=</span> {k: [] <span class="cf">for</span> k <span class="kw">in</span> element_index.keys()}</span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> idx_top[:top]:</span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>    env <span class="op">=</span> results_dqn[idx_budget][<span class="st">'exploration'</span>][<span class="st">'envs'</span>][i]</span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>    bound, layout <span class="op">=</span> env.best[<span class="dv">0</span>], env.best_layout</span>
+<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> basis_element <span class="kw">in</span> layout:</span>
+<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a>        element_bound[element2str(basis_element)] <span class="op">+=</span> [bound]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>counts_top <span class="op">=</span> np.array([<span class="bu">len</span>(element_bound[k]) <span class="cf">for</span> k <span class="kw">in</span> x])</span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>freq_top <span class="op">=</span> counts<span class="op">/</span>counts.<span class="bu">sum</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">15</span>, <span class="dv">4</span>))</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>plt.bar(x, freq_top)</span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>plt.xticks(rotation<span class="op">=</span><span class="dv">75</span>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="03_entanglement_witnessing_files/figure-html/cell-39-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>counts_link <span class="op">=</span> {}</span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> link <span class="kw">in</span> x[:<span class="dv">18</span>]:</span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>    counts_link[link] <span class="op">=</span> <span class="bu">sum</span>([counts_top[element_index[k]] <span class="cf">for</span> k <span class="kw">in</span> element_index.keys()</span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>                             <span class="cf">if</span> np.<span class="bu">all</span>([l <span class="kw">in</span> k <span class="cf">for</span> l <span class="kw">in</span> link])])</span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a>counts_link <span class="op">=</span> {k: v<span class="op">/</span><span class="bu">max</span>(counts_link.values()) <span class="cf">for</span> k, v <span class="kw">in</span> counts_link.items()}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>plt.bar(<span class="bu">list</span>(counts_link.keys()), <span class="bu">list</span>(counts_link.values()))<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<pre><code>&lt;BarContainer object of 18 artists&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="03_entanglement_witnessing_files/figure-html/cell-41-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<p>We do not see any major differences with the previous analysis, meaning that the agents have consistently found similar relaxations. The main difference that we observe is in the representation of the <span class="math inline">\([0, 3]\)</span> term, which is clearly overrepresented by the top 10 performing agents, and it was just shy above the baseline in the previous analysis.</p>
+</section>
+<section id="constraint-statistics-bounds" class="level3">
+<h3 class="anchored" data-anchor-id="constraint-statistics-bounds">Constraint statistics: bounds</h3>
+<p>We can also look at the relationship between each basis element and the obtained bound. This way, we can see whether a certain element results in higher energy bounds on average.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>bound_2body <span class="op">=</span> <span class="op">-</span><span class="fl">9.6186</span> <span class="co"># From before</span></span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>bound_avg <span class="op">=</span> np.array([np.mean(bounds_by_element[k]) <span class="cf">for</span> k <span class="kw">in</span> x])</span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>bound_max <span class="op">=</span> np.array([np.<span class="bu">max</span>(bounds_by_element[k]) </span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>                      <span class="cf">if</span> <span class="bu">len</span>(bounds_by_element[k]) <span class="op">&gt;</span> <span class="dv">0</span> <span class="cf">else</span> np.nan <span class="cf">for</span> k <span class="kw">in</span> x])</span>
+<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a>bound_gain <span class="op">=</span> bound_avg <span class="op">-</span> bound_2body</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We start by looking at every single energy bound obtained with a layout that contained each basis element.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>x_scatter <span class="op">=</span> [[k]<span class="op">*</span>count <span class="cf">for</span> k, count <span class="kw">in</span> <span class="bu">zip</span>(x, counts)]</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>x_scatter <span class="op">=</span> [s <span class="cf">for</span> sublist <span class="kw">in</span> x_scatter <span class="cf">for</span> s <span class="kw">in</span> sublist]</span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>y_scatter <span class="op">=</span> [s <span class="cf">for</span> k <span class="kw">in</span> x <span class="cf">for</span> s <span class="kw">in</span> bounds_by_element[k]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">15</span>, <span class="dv">4</span>))</span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>plt.scatter(x_scatter, y_scatter)</span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>plt.grid(alpha<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a>plt.xticks(rotation<span class="op">=</span><span class="dv">75</span>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="03_entanglement_witnessing_files/figure-html/cell-44-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p>In this plot, top row of points corresponds to the best obtained energy bound with the layout <span class="math inline">\([[3, 6], [0, 1, 2], [0, 1, 6], [0, 2, 3], \dots]\)</span>. Interestingly, the term <span class="math inline">\([0, 1, 6]\)</span> only appears in the best layout.</p>
+<p>However, with this visualization, it is hard to determine the average performance associated to each element. To get a better picture, we can compute the average energy gain over the full 2-body constraint baseline.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">15</span>, <span class="dv">4</span>))</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>plt.bar(x, bound_gain)</span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>plt.xticks(rotation<span class="op">=</span><span class="dv">75</span>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="03_entanglement_witnessing_files/figure-html/cell-45-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p>It’s still a bit hard to find the relationship between the different basis elements and the best bounds. Let’s build a regressor that tries to predict the bound we will obtain with a given layout and inspect its feature importances.</p>
+<div class="callout-warning callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Work in progress
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Yeh, well… This is awkward. We have not gathered enough time and energy to do this. If you want to have a look at it together just send us an email.</p>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="references" class="level1">
+<h1>References</h1>
+<p>[1] G. Tóth. <a href="https://journals.aps.org/pra/abstract/10.1103/PhysRevA.71.010301">Entanglement Witnesses in Spin Models</a>. <em>Physical Review A</em> <strong>71</strong> 010301 (2005).</p>
+<p>[2] A. Peres. <a href="https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.77.1413">Separability Criterion for Density Matrices</a>. <em>Physical Review Letters</em> <strong>77</strong> 1413 (1996).</p>
+<p>[3] B. Requena, G. Muñoz-Gil, M. Lewenstein, V. Dunjko, J. Tura. <a href="https://journals.aps.org/prresearch/abstract/10.1103/PhysRevResearch.5.013097">Certificates of quantum many-body properties assisted by machine learning</a>. <em>Phys. Rev.&nbsp;Research</em> <strong>5</strong>, 013097 (2023)</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

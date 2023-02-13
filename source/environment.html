@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.335">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="The environment contains the information about the problem, handles the execution of the actions and provides the rewards.">
+
+<title>bounce - Environment</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../styles.css">
+<meta property="og:title" content="bounce - Environment">
+<meta property="og:description" content="The environment contains the information about the problem, handles the execution of the actions and provides the rewards.">
+<meta property="og:site-name" content="bounce">
+<meta name="twitter:title" content="bounce - Environment">
+<meta name="twitter:description" content="The environment contains the information about the problem, handles the execution of the actions and provides the rewards.">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">bounce</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/BorjaRequena/bounce/"><i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">Environment</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">BOUNCE</a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">Documentation</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../source/environment.html" class="sidebar-item-text sidebar-link active">Environment</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../source/agents.html" class="sidebar-item-text sidebar-link">Agents</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../source/hamiltonian.html" class="sidebar-item-text sidebar-link">Hamiltonian</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../source/sdp.html" class="sidebar-item-text sidebar-link">Semidefinite programming</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../source/training.html" class="sidebar-item-text sidebar-link">Training</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../source/utils.html" class="sidebar-item-text sidebar-link">Utils</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">Tutorials</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorial/introduction.html" class="sidebar-item-text sidebar-link">Constraint optimization with reinforcement learning</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorial/benchmarking.html" class="sidebar-item-text sidebar-link">Benchmarking agents</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorial/transfer_learning.html" class="sidebar-item-text sidebar-link">Transfer learning</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorial/entanglement_witnessing.html" class="sidebar-item-text sidebar-link">Energy-based entanglement witnesses</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorial/plots.html" class="sidebar-item-text sidebar-link">Plots</a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#sdpenvironment" id="toc-sdpenvironment" class="nav-link active" data-scroll-target="#sdpenvironment">SdPEnvironment</a></li>
+  <li><a href="#create-an-environment" id="toc-create-an-environment" class="nav-link" data-scroll-target="#create-an-environment">Create an environment</a></li>
+  <li><a href="#exploring-the-state-space" id="toc-exploring-the-state-space" class="nav-link" data-scroll-target="#exploring-the-state-space">Exploring the state space</a>
+  <ul class="collapse">
+  <li><a href="#exploration-boundaries-and-errors" id="toc-exploration-boundaries-and-errors" class="nav-link" data-scroll-target="#exploration-boundaries-and-errors">Exploration boundaries and errors</a>
+  <ul class="collapse">
+  <li><a href="#sdpenvironment.step" id="toc-sdpenvironment.step" class="nav-link" data-scroll-target="#sdpenvironment.step">SdPEnvironment.step</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#initial-state" id="toc-initial-state" class="nav-link" data-scroll-target="#initial-state">Initial state</a></li>
+  <li><a href="#custom-basis" id="toc-custom-basis" class="nav-link" data-scroll-target="#custom-basis">Custom basis</a></li>
+  <li><a href="#rewards" id="toc-rewards" class="nav-link" data-scroll-target="#rewards">Rewards</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/BorjaRequena/bounce/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block">Environment</h1>
+</div>
+
+<div>
+  <div class="description">
+    The environment contains the information about the problem, handles the execution of the actions and provides the rewards.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<hr>
+<p><a href="https://github.com/BorjaRequena/bounce/blob/main/bounce/environment.py#L17" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="sdpenvironment" class="level3">
+<h3 class="anchored" data-anchor-id="sdpenvironment">SdPEnvironment</h3>
+<blockquote class="blockquote">
+<pre><code> SdPEnvironment (problem, sdp_solver, budget,
+                 reward_criterion='bound_norm', layout_basis=None,
+                 max_basis_size=None, initial_size=1, bound_tol=0.001)</code></pre>
+</blockquote>
+<p>Environment for constraint-space exploration.</p>
+<p>The environment contains all the information of the problem at hand, and controls the way the agent can explore the state space.</p>
+<p>Hence, we must provide the <a href="https://BorjaRequena.github.io/bounce/source/environment.html#sdpenvironment"><code>SdPEnvironment</code></a> with an instance of our problem, such as a <a href="https://BorjaRequena.github.io/bounce/source/hamiltonian.html#hamiltonian"><code>Hamiltonian</code></a>, an adequate solver that defines the objective, such as an <a href="https://BorjaRequena.github.io/bounce/source/sdp.html#sdpenergysolver"><code>SdPEnergySolver</code></a>.</p>
+<p>Then, we need to provide information about the reinforcement learning task, such as the computational budget we can afford, and the reward function that we want to use. Optionally, we can provide a pre-defined layout basis, which conditions the kind of constraints that the agent can create. Otherwise, the environment generates its own basis directly from the problem instance and it underlying structure, e.g., the <code>Hamiltonian.graph</code>.</p>
+</section>
+<section id="create-an-environment" class="level1">
+<h1>Create an environment</h1>
+<p>Let’s see an example. We will start by defining the problem parameters. In this case, we will try to find the ground state energy of a Heisenberg XX Hamiltonian on a one-dimensional chain. Furthermore, we will consider a moderate budget that only allows us to consider 3-body reduced density matrices to compute the bounds.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">5</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>chain <span class="op">=</span> Chain1D(N)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>B, J <span class="op">=</span> <span class="dv">3</span>, <span class="dv">1</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>H <span class="op">=</span> XXHamiltonian(chain, B, J)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>solver <span class="op">=</span> SdPEnergySolver()</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>budget <span class="op">=</span> <span class="dv">100</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>With this, we can create our environment.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>env <span class="op">=</span> SdPEnvironment(H, solver, budget)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The environment starts in the simplemost state, which corresponds to a trivial relaxation of the problem. This is represented by a state of zeros, indicating that no compatibility constraints are active at this time.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>env.state</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0])</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> (env.state <span class="op">==</span> np.zeros(<span class="dv">2</span><span class="op">*</span>N)).<span class="bu">all</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The state vector serves as a boolean indicator of which constraints in the environment’s basis are currently active, although the vector is not boolean itself because it has to be processed by the agents.</p>
+<p>In this case, the environment’s basis is automatically generated from the <code>Hamiltonian.graph.edges</code> and the budget.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>env.layout_basis</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>array([array([0, 1]), array([1, 2]), array([2, 3]), array([3, 4]),
+       array([0, 4]), array([0, 1, 2]), array([0, 1, 4]),
+       array([1, 2, 3]), array([2, 3, 4]), array([0, 3, 4])], dtype=object)</code></pre>
+</div>
+</div>
+<p>The environment associates a unique layout to every state which depends on the basis and the active constraints. In this case, the layout is made out of single-body reduced density matrices.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>env.layout</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[array([0]), array([1]), array([2]), array([3]), array([4])]</code></pre>
+</div>
+</div>
+<p>The environment takes care of providing the solver the needed information of the problem. In this case, it feeds the <a href="https://BorjaRequena.github.io/bounce/source/sdp.html#sdpenergysolver"><code>SdPEnergySolver</code></a> both the data from the Hamiltonian and the current layout. We can solve the associated semidefinite program (SdP) to the active constraints with the <code>get_values</code> method.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>bound, cost, error <span class="op">=</span> env.get_values()</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>bound, cost, error</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(-24.99999999732747, 19, 0)</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> bound <span class="op">==</span> solver.solve(H.to_sdp(), env.layout)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> cost <span class="op">==</span> solver.ojimetro(env.layout)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Every time we visit a new state, the environment keeps track of the active values. This way, it builds a reference of the best possible bounds that can be obtained. For now, given that we have not moved from the initial state, the best bound and layout are the only ones it has ever seen.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>env.max_bound, env.best_layout</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(-24.99999999732747,
+ [array([0]), array([1]), array([2]), array([3]), array([4])])</code></pre>
+</div>
+</div>
+<p>In order to assess which is the best layout, it accounts for both the best possible bound and the lowest possible cost with which it has ever been achieved. This is stored in <code>best</code> which contains the best possible bound together with the maximum an minimum costs it was ever achieved.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>env.best</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>array([-25.,  19.,  19.])</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> bound <span class="op">==</span> env.max_bound</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> env.best_layout <span class="op">==</span> env.layout</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> (env.best <span class="op">==</span> np.array([bound, cost, cost])).<span class="bu">all</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="exploring-the-state-space" class="level1">
+<h1>Exploring the state space</h1>
+<p>We can move to new states by performing an action. Actions are, in essence, very simple. They are integers that indicate which bit we flip in the state vector. Doing so, adds or removes constraints in the associated SdP.</p>
+<p>In order to test this out, let’s add the first 3-body constraint, indexed by <code>N</code> in this case.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>new_state, bound, cost, error <span class="op">=</span> env.perform_action(N)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>new_state, bound, cost</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(array([1, 1, 0, 0, 0, 1, 0, 0, 0, 0]), -20.999999995348936, 71)</code></pre>
+</div>
+</div>
+<p>We observe that now we have a higher energy bound. In this case, the higher the better, so it’s nice! However, the associated cost is also much larger than before.</p>
+<p>Additionally, despite performing a single action, we observe that now there are three “ones” in our state vector. This is because the basis element in the <code>N</code>-th position, contained two other elements of smaller size. We can see the state vector by size with the method <code>show_constraints</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>env.show_constraints()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>2: [1 1 0 0 0]
+3: [1 0 0 0 0]</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>env<span class="sc">.</span>layout_basis[N]<span class="sc">}</span><span class="ss"> contains </span><span class="sc">{</span>env<span class="sc">.</span>layout_basis[<span class="dv">0</span>]<span class="sc">}</span><span class="ss"> and </span><span class="sc">{</span>env<span class="sc">.</span>layout_basis[<span class="dv">1</span>]<span class="sc">}</span><span class="ss">."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[0 1 2] contains [0 1] and [1 2].</code></pre>
+</div>
+</div>
+<p>However, these two smaller ones are not present in the laoyut, as they would be redundant.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>env.layout</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[array([0, 1, 2]), array([3]), array([4])]</code></pre>
+</div>
+</div>
+<p>We can see this with the <a href="https://BorjaRequena.github.io/bounce/source/utils.html#contained_constraints"><code>contained_constraints</code></a> method.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>env.contained_constraints()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>array([ True,  True, False, False, False, False, False, False, False,
+       False])</code></pre>
+</div>
+</div>
+<p>This way, we ensure a consistent exploration through state space. Now, if we removed the larger element, the two smaller ones would remain, ensuring that there are no big leaps in the exploration and limiting the actions that can be performed. The agent cannot attempt to add or remove elements contained in larger ones. We can see this with the <a href="https://BorjaRequena.github.io/bounce/source/utils.html#action_mask"><code>action_mask</code></a> method, which indicates the state vector positions that can be modified.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>env.action_mask()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>array([False, False,  True,  True,  True,  True,  True,  True,  True,
+        True,  True])</code></pre>
+</div>
+</div>
+<p>Notice that the action mask is one element longer than the state vector because it accounts for the action of “remaining still”.</p>
+<p>Since we have moved to a state that provides a better bound for our problem, the references have changed.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>env.max_bound, env.best_layout</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(-20.999999995348936, [array([0, 1, 2]), array([3]), array([4])])</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> (new_state <span class="op">==</span> env.state).<span class="bu">all</span>()</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> bound <span class="op">==</span> env.max_bound</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> (bound, cost, <span class="dv">0</span>) <span class="op">==</span> env.get_values()</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> (env.best <span class="op">==</span> np.array([bound, cost, cost])).<span class="bu">all</span>()</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> np.<span class="bu">all</span>([(l_best <span class="op">==</span> l).<span class="bu">all</span>() <span class="cf">for</span> l_best, l <span class="kw">in</span> <span class="bu">zip</span>(env.best_layout, env.layout)])</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> (env.contained_constraints() <span class="op">==</span> np.array([<span class="va">True</span>, <span class="va">True</span>] <span class="op">+</span> [<span class="va">False</span>]<span class="op">*</span>(<span class="dv">2</span><span class="op">*</span>N<span class="op">-</span><span class="dv">2</span>))).<span class="bu">all</span>()</span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> (env.action_mask() <span class="op">==</span> np.array([<span class="va">False</span>, <span class="va">False</span>] <span class="op">+</span> [<span class="va">True</span>]<span class="op">*</span>(<span class="dv">2</span><span class="op">*</span>N<span class="op">-</span><span class="dv">1</span>))).<span class="bu">all</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Repeating the action, we remove the larger element and the two smaller ones remain.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>new_state, bound, cost, _ <span class="op">=</span> env.perform_action(N)</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>env.show_constraints()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>2: [1 1 0 0 0]
+3: [0 0 0 0 0]</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>env.layout</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[array([0, 1]), array([1, 2]), array([3]), array([4])]</code></pre>
+</div>
+</div>
+<p>Doing so, we have reduced the associated cost of the state. However, the bound has remained the same.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>bound, cost</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(-20.99999999834299, 36)</code></pre>
+</div>
+</div>
+<p>This is one of the main motivations behind the work <a href="https://journals.aps.org/prresearch/abstract/10.1103/PhysRevResearch.5.013097">Certificates of quantum many-body properties assisted by machine learning</a>. We can see this reflected in the environment’s references, which now shows the minimum and maximum costs with which the best bound has ever been obtained.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>env.best</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>array([-21.,  36.,  71.])</code></pre>
+</div>
+</div>
+<section id="exploration-boundaries-and-errors" class="level2">
+<h2 class="anchored" data-anchor-id="exploration-boundaries-and-errors">Exploration boundaries and errors</h2>
+<p>If we were to exceed the allowed computational budget with an action, we would obtain an error indicator. The erorr code is: - 0: all good! - 1: there could not be found a solution for the associated SdP - 2: the associated SdP cost exceeds the computational budget</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>env.perform_action(N<span class="op">+</span><span class="dv">3</span>)</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>new_state, bound, cost, err <span class="op">=</span> env.perform_action(N<span class="op">+</span><span class="dv">4</span>)</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>env.show_constraints()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>2: [1 1 1 1 1]
+3: [0 0 0 1 1]</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>err, cost, budget</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(2, 132, 100)</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> err <span class="op">==</span> <span class="dv">2</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> cost <span class="op">&gt;</span> budget</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Errors are the way through which we establish “walls” in the state space. This way, agents do not need to learn the boundaries of the feasible region nor need to keep track of it.</p>
+<p>The environment prevents threspassing the state space boundaries with the <a href="https://BorjaRequena.github.io/bounce/source/training.html#step"><code>step</code></a> method. Rather than taking a single action, such as the <code>perform_action</code> method.</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/bounce/blob/main/bounce/environment.py#L83" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="sdpenvironment.step" class="level3">
+<h3 class="anchored" data-anchor-id="sdpenvironment.step">SdPEnvironment.step</h3>
+<blockquote class="blockquote">
+<pre><code> SdPEnvironment.step (actions)</code></pre>
+</blockquote>
+<p>Receives a list of actions (priority ordered) and executes them until one succeeds. Input: - actions: collection of actions (iterable of ints). Output: - next_state: new state after performing the chosen action. - action: action that was actually performed among the input ones. - bound: bound associated to the new state. - cost: cost associated to the new state. - err: error code (should be zero).</p>
+<p>The <a href="https://BorjaRequena.github.io/bounce/source/training.html#step"><code>step</code></a> method takes a list of priority-ordered actions. The method performes them in the given order until one succeeds, ensuring that we never land on an error-flagged state.</p>
+<p>In order to test this out, let’s first reset the environment to the initial state.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>env.reset()</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>env.show_constraints()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>2: [0 0 0 0 0]
+3: [0 0 0 0 0]</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>new_state, action, bound, cost, error <span class="op">=</span> env.step([<span class="dv">5</span>, <span class="dv">6</span>, <span class="dv">7</span>, <span class="dv">0</span>, <span class="dv">1</span>])</span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"The performed action was </span><span class="sc">{</span>action<span class="sc">}</span><span class="ss">."</span>)</span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>env.show_constraints()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>The performed action was 5.
+2: [1 1 0 0 0]
+3: [1 0 0 0 0]</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> action <span class="op">==</span> <span class="dv">5</span></span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> error <span class="op">==</span> <span class="dv">0</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>If we now try to add an additional large constraint, we will exceed the computational budget. However, the step method will perform the first suitable action.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>actions_to_try <span class="op">=</span> [<span class="dv">8</span>, <span class="dv">6</span>, <span class="dv">3</span>, <span class="dv">5</span>]</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>new_state, action, bound, cost, error <span class="op">=</span> env.step(actions_to_try)</span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"The performed action was </span><span class="sc">{</span>action<span class="sc">}</span><span class="ss">."</span>)</span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>env.show_constraints()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>The performed action was 3.
+2: [1 1 0 1 0]
+3: [1 0 0 0 0]</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>error</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>0</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> action <span class="op">==</span> <span class="dv">3</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The <a href="https://BorjaRequena.github.io/bounce/source/training.html#step"><code>step</code></a> method has skipped the first two actions in the priority list to avoid exceeding the budget. In the extreme case in which none of the actions provided can be executed, the function returns the resutls for the last action it tried, although the environment has not advanced. This should never happen if we provide all possible actions ranked and the state-space is properly designed. Intuitively, there should never be rabbit holes the agent can’t escape from.</p>
+</section>
+</section>
+</section>
+<section id="initial-state" class="level1">
+<h1>Initial state</h1>
+<p>As we’ve seen before, the exploration starts at the zero state by default. However, in some cases it may be more convenient to start somewhere else. We can specify the initial constraint size to the <a href="https://BorjaRequena.github.io/bounce/source/environment.html#sdpenvironment"><code>SdPEnvironment</code></a> such that the initial state comprises all the basis elements of such size.</p>
+<p>Let’s see how this works in the current example.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>env <span class="op">=</span> SdPEnvironment(H, solver, budget, initial_size<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>env.show_constraints()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>2: [1 1 1 1 1]
+3: [0 0 0 0 0]</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> (env.state[:N] <span class="op">==</span> <span class="dv">1</span>).<span class="bu">all</span>()</span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> (env.state[N:] <span class="op">==</span> <span class="dv">0</span>).<span class="bu">all</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="custom-basis" class="level1">
+<h1>Custom basis</h1>
+<p>We can have a major impact in the state space and its boundaries by specifying a layout basis of our choice. For instance, we may be interested in finding bounds to a problem using a certain kind of constraints.</p>
+<p>Let’s take the previous example and set a specific basis.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>layout_basis <span class="op">=</span> np.array([np.array([<span class="dv">0</span>, <span class="dv">1</span>]), np.array([<span class="dv">2</span>, <span class="dv">3</span>]), np.array([<span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>]), np.array([<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">4</span>, <span class="dv">5</span>])], dtype<span class="op">=</span><span class="bu">object</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>env <span class="op">=</span> SdPEnvironment(H, solver, budget, layout_basis<span class="op">=</span>layout_basis)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>env.layout_basis</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>array([array([0, 1]), array([2, 3]), array([3, 4, 5]),
+       array([0, 1, 4, 5])], dtype=object)</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> np.<span class="bu">all</span>([(lb <span class="op">==</span> le).<span class="bu">all</span>() <span class="cf">for</span> lb, le <span class="kw">in</span> <span class="bu">zip</span>(layout_basis, env.layout_basis)])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>In this case, we have basis elements of different sizes with various overlaps. For instance, in this case there are no 2-body elements contained in the 3-body one.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>env.step([<span class="dv">2</span>])</span>
+<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a>env.show_constraints()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>2: [0 0]
+3: [1]
+4: [0]</code></pre>
+</div>
+</div>
+<p>While some times we may want to use a fully customized basis, some times we simply care about truncating it. For instance, we may have a budget that allows us to reach up to four-body elements, but we wish to invest the resources into using exclusively as many three-body elements as possible. In these cases, we can specify a maximum size for the basis elements.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a>budget <span class="op">=</span> <span class="dv">300</span></span>
+<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a>max_basis_size <span class="op">=</span> <span class="dv">3</span></span>
+<span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a>env_unrestricted <span class="op">=</span> SdPEnvironment(H, solver, budget)</span>
+<span id="cb68-4"><a href="#cb68-4" aria-hidden="true" tabindex="-1"></a>env_restricted <span class="op">=</span> SdPEnvironment(H, solver, budget, max_basis_size<span class="op">=</span>max_basis_size)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>env_unrestricted.show_constraints()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>2: [0 0 0 0 0]
+3: [0 0 0 0 0]
+4: [0 0 0 0 0]</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a>env_restricted.show_constraints()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>2: [0 0 0 0 0]
+3: [0 0 0 0 0]</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="bu">max</span>([<span class="bu">len</span>(l) <span class="cf">for</span> l <span class="kw">in</span> env_restricted.layout_basis]) <span class="op">==</span> max_basis_size</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="rewards" class="level1">
+<h1>Rewards</h1>
+<p>Besides providing a consistent state space and exploration rules, the environment is in charge of providing feedback to the agent. When we initialize the environment, we choose the desired criterion for the reward. By default, we use the <code>bound_norm_reward</code>, with which we have obtained the best results so far and we have performed all the calculations in <a href="https://journals.aps.org/prresearch/abstract/10.1103/PhysRevResearch.5.013097">[1]</a>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a>env.reward_fun.<span class="va">__name__</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>'bound_norm_reward'</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> env.reward_fun.<span class="va">__name__</span> <span class="op">==</span> <span class="st">'bound_norm_reward'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Given that, in general, we do not know the optimal relaxation, the environment relies on the references it has gathered during the exploration to provide the rewards. We can choose among: - <strong>bound_reward</strong>: the reward is the obtained bound, regardless of the cost. It can take any arbitrary value depending on the problem. - <strong>bound_norm_reward</strong>: the reward is a normalized function between zero and one which accounts for both the value of the bound and the associated cost. - <strong>bound_improve_reward</strong>: the reward is the improvement of a bound with respect to the minimum one ever observed.</p>
+<p>We select the criterion by providing the name of the function excluding the <code>'_reward'</code>.</p>
+<p>Memory</p>
+<p>The environment implements a memory that stores the SdP solution of all the visited states. This way, we do not need to instantiate the SdP and solve it every time we revisit a state, speeding up the whole process. We can save the memory with the <code>save_memory</code> method and it will be automatically loaded when dealing with the same problem. The limit stored solutions in the memory is 1e6.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a>env.memory_path</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>Path('../memories/memory_Energy_xx_N5_Chain1D_terms_3.00_3.00_3.00_3.00_3.00_1.00_1.00_1.00_1.00_1.00.pkl')</code></pre>
+</div>
+</div>
+</section>
+<section id="references" class="level1">
+<h1>References</h1>
+<ul>
+<li>[1] B. Requena, G. Muñoz-Gil, M. Lewenstein, V. Dunjko, J. Tura. <a href="https://journals.aps.org/prresearch/abstract/10.1103/PhysRevResearch.5.013097">Certificates of quantum many-body properties assisted by machine learning</a>. <em>Phys. Rev.&nbsp;Research</em> <strong>5</strong>, 013097 (2023)</li>
+</ul>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

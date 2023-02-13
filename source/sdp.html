@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.335">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Toolkit to solve the semi-definite program defined by the optimization problem and its set of constraints.">
+
+<title>bounce - Semidefinite programming</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<link rel="stylesheet" href="../styles.css">
+<meta property="og:title" content="bounce - Semidefinite programming">
+<meta property="og:description" content="Toolkit to solve the semi-definite program defined by the optimization problem and its set of constraints.">
+<meta property="og:site-name" content="bounce">
+<meta name="twitter:title" content="bounce - Semidefinite programming">
+<meta name="twitter:description" content="Toolkit to solve the semi-definite program defined by the optimization problem and its set of constraints.">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">bounce</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/BorjaRequena/bounce/"><i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">Semidefinite programming</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">BOUNCE</a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">Documentation</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../source/environment.html" class="sidebar-item-text sidebar-link">Environment</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../source/agents.html" class="sidebar-item-text sidebar-link">Agents</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../source/hamiltonian.html" class="sidebar-item-text sidebar-link">Hamiltonian</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../source/sdp.html" class="sidebar-item-text sidebar-link active">Semidefinite programming</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../source/training.html" class="sidebar-item-text sidebar-link">Training</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../source/utils.html" class="sidebar-item-text sidebar-link">Utils</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">Tutorials</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorial/introduction.html" class="sidebar-item-text sidebar-link">Constraint optimization with reinforcement learning</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorial/benchmarking.html" class="sidebar-item-text sidebar-link">Benchmarking agents</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorial/transfer_learning.html" class="sidebar-item-text sidebar-link">Transfer learning</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorial/entanglement_witnessing.html" class="sidebar-item-text sidebar-link">Energy-based entanglement witnesses</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorial/plots.html" class="sidebar-item-text sidebar-link">Plots</a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#picos2np" id="toc-picos2np" class="nav-link active" data-scroll-target="#picos2np">picos2np</a></li>
+  <li><a href="#sdp-formalism" id="toc-sdp-formalism" class="nav-link" data-scroll-target="#sdp-formalism">SdP formalism</a>
+  <ul class="collapse">
+  <li><a href="#sdpsolver" id="toc-sdpsolver" class="nav-link" data-scroll-target="#sdpsolver">SdPSolver</a></li>
+  </ul></li>
+  <li><a href="#ground-state-energy-approximation" id="toc-ground-state-energy-approximation" class="nav-link" data-scroll-target="#ground-state-energy-approximation">Ground state energy approximation</a>
+  <ul class="collapse">
+  <li><a href="#sdpenergysolver" id="toc-sdpenergysolver" class="nav-link" data-scroll-target="#sdpenergysolver">SdPEnergySolver</a></li>
+  <li><a href="#solving-a-problem-instance" id="toc-solving-a-problem-instance" class="nav-link" data-scroll-target="#solving-a-problem-instance">Solving a problem instance</a>
+  <ul class="collapse">
+  <li><a href="#sdpenergysolver.solve" id="toc-sdpenergysolver.solve" class="nav-link" data-scroll-target="#sdpenergysolver.solve">SdPEnergySolver.solve</a></li>
+  </ul></li>
+  <li><a href="#cost-estimation" id="toc-cost-estimation" class="nav-link" data-scroll-target="#cost-estimation">Cost estimation</a>
+  <ul class="collapse">
+  <li><a href="#sdpenergysolver.ojimetro" id="toc-sdpenergysolver.ojimetro" class="nav-link" data-scroll-target="#sdpenergysolver.ojimetro">SdPEnergySolver.ojimetro</a></li>
+  </ul></li>
+  <li><a href="#alternative-methods-to-lower-bound-the-ground-state-energy" id="toc-alternative-methods-to-lower-bound-the-ground-state-energy" class="nav-link" data-scroll-target="#alternative-methods-to-lower-bound-the-ground-state-energy">Alternative methods to lower bound the ground state energy</a>
+  <ul class="collapse">
+  <li><a href="#sdpenergyandersonsolver" id="toc-sdpenergyandersonsolver" class="nav-link" data-scroll-target="#sdpenergyandersonsolver">SdPEnergyAndersonSolver</a></li>
+  <li><a href="#sdpenergyuskovlichkovskiysolver" id="toc-sdpenergyuskovlichkovskiysolver" class="nav-link" data-scroll-target="#sdpenergyuskovlichkovskiysolver">SdPEnergyUskovLichkovskiySolver</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#entanglement-witnessing" id="toc-entanglement-witnessing" class="nav-link" data-scroll-target="#entanglement-witnessing">Entanglement witnessing</a>
+  <ul class="collapse">
+  <li><a href="#sdpwitnesssolver" id="toc-sdpwitnesssolver" class="nav-link" data-scroll-target="#sdpwitnesssolver">SdPWitnessSolver</a></li>
+  </ul></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/BorjaRequena/bounce/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block">Semidefinite programming</h1>
+</div>
+
+<div>
+  <div class="description">
+    Toolkit to solve the semi-definite program defined by the optimization problem and its set of constraints.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<hr>
+<p><a href="https://github.com/BorjaRequena/bounce/blob/main/bounce/sdp.py#L15" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="picos2np" class="level3">
+<h3 class="anchored" data-anchor-id="picos2np">picos2np</h3>
+<blockquote class="blockquote">
+<pre><code> picos2np (variable)</code></pre>
+</blockquote>
+<p>Converts picos variable (even sparse) to numpy matrix.</p>
+</section>
+<section id="sdp-formalism" class="level1">
+<h1>SdP formalism</h1>
+<p>In order to formulate and solve the SdP there are two main needed items: * an object containing the problem details in terms of <code>picos.Constant</code> with a <code>to_sdp()</code> method, such as a <a href="https://BorjaRequena.github.io/bounce/source/hamiltonian.html#hamiltonian"><code>Hamiltonian</code></a> with <code>Hamiltonian.to_sdp()</code>. * a layout based in <code>np.ndarray</code>s, e.g., <code>L = [np.array([0, 1]), np.array([0, 1, 2])</code> determining the problem constraints.</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/bounce/blob/main/bounce/sdp.py#L20" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="sdpsolver" class="level3">
+<h3 class="anchored" data-anchor-id="sdpsolver">SdPSolver</h3>
+<blockquote class="blockquote">
+<pre><code> SdPSolver (solver='cvxopt')</code></pre>
+</blockquote>
+<p>Initialize self. See help(type(self)) for accurate signature.</p>
+<p>The <a href="https://BorjaRequena.github.io/bounce/source/sdp.html#sdpsolver"><code>SdPSolver</code></a> must be tailored to the problem instances that we aim to solve. Defining the problem and the solver should go hand-to-hand and they are handled by the <a href="https://BorjaRequena.github.io/bounce/source/environment.html#sdpenvironment"><code>SdPEnvironment</code></a> during the optimization. Essentially, the environment takes the result of <code>problem.to_sdp()</code> and feeds it into the solver.</p>
+<p><a href="https://BorjaRequena.github.io/bounce/source/sdp.html#sdpsolver"><code>SdPSolver</code></a>s have two main methods: <code>solve</code> and <code>ojimetro</code>. The first one, solves a problem instance given a layout, such as <code>solver.solve(problem.to_sdp(), layout)</code>. The second one estimates the cost associated to solving the SdP given a layout, with the syntax <code>solver.ojimetro(layout)</code>. We can choose any metric for the cost, for example, the amount of free variables in the resulting SdP.</p>
+</section>
+</section>
+<section id="ground-state-energy-approximation" class="level1">
+<h1>Ground state energy approximation</h1>
+<p>Finding the ground state energy of a quantum Hamiltonian is a fundamental problem in quantum physics. It constitutes global optimization problem over all possible quantum states <span class="math inline">\(\rho\)</span> of the form <span class="math display">\[E_0=\min_\rho \text{Tr}\left[\rho H\right]\,,\]</span> where <span class="math inline">\(E_0\)</span> denotes the ground state energy for the Hamiltonian <span class="math inline">\(H\)</span>. Nonetheless, the complexity of such optimization task grows exponentially with the physical system’s size, so we often rely on approximations. Here, we consider a relaxation of the problem based on an SdP.</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/bounce/blob/main/bounce/sdp.py#L33" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="sdpenergysolver" class="level3">
+<h3 class="anchored" data-anchor-id="sdpenergysolver">SdPEnergySolver</h3>
+<blockquote class="blockquote">
+<pre><code> SdPEnergySolver (solver='cvxopt')</code></pre>
+</blockquote>
+<p>Solver to compute lower bounds of the ground state energy of local Hamiltonians. It follows the method described in [1] (see refs below) to formulate the objective and enforce the problem constraints.</p>
+<p>The <a href="https://BorjaRequena.github.io/bounce/source/sdp.html#sdpenergysolver"><code>SdPEnergySolver</code></a> solves the problem of finding lower bounds to the ground state energy of local Hamiltonians. Hence, the <a href="https://BorjaRequena.github.io/bounce/source/environment.html#sdpenvironment"><code>SdPEnvironment</code></a> should receive a <a href="https://BorjaRequena.github.io/bounce/source/hamiltonian.html#hamiltonian"><code>Hamiltonian</code></a> as problem instance together with this solver. We use this case to illustrate the general behaviour of the <code>SdPSolvers</code> and how to use them.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">6</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>chain <span class="op">=</span> Chain1D(N)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>B, J <span class="op">=</span> <span class="fl">1.</span>, [i<span class="op">%</span><span class="dv">3</span> <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(N)]</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>H <span class="op">=</span> XXHamiltonian(chain, B, J)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="solving-a-problem-instance" class="level2">
+<h2 class="anchored" data-anchor-id="solving-a-problem-instance">Solving a problem instance</h2>
+<p>Now that we have defined a problem, we use the <code>solve</code> method to define the objective function, which corresponds to the expected energy, and the problem constraints, given by a layout.</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/bounce/blob/main/bounce/sdp.py#L38" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="sdpenergysolver.solve" class="level3">
+<h3 class="anchored" data-anchor-id="sdpenergysolver.solve">SdPEnergySolver.solve</h3>
+<blockquote class="blockquote">
+<pre><code> SdPEnergySolver.solve (interactions, layout)</code></pre>
+</blockquote>
+<p>Creates and solves the SdP associated to the given layout and Hamiltonian interactions. The result is a lower bound of the Hamiltonian’s ground state energy.</p>
+<p>The method takes the <code>Hamiltonian.interactions</code>, provided by the <code>Hamiltonian.to_sdp()</code> method, and a layout with which we define the set of compatibility constraints imposed in the SdP, as we explain in <a href="https://arxiv.org/abs/2103.03830">[1]</a>.</p>
+<p>Given the Hamiltonian, let’s define a layout in order to compute an energy bound.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>simple_layout <span class="op">=</span> fill_layout([np.array([<span class="dv">0</span>, N<span class="op">-</span><span class="dv">1</span>])], N)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>simple_layout</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[array([0, 5]), array([1]), array([2]), array([3]), array([4])]</code></pre>
+</div>
+</div>
+<p>And now we can solve the associated SdP to the Hamiltonian with the given set of constraints.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>solver <span class="op">=</span> SdPEnergySolver()</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>solver.solve(H.to_sdp(), simple_layout)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>-15.999999999012134</code></pre>
+</div>
+</div>
+<p>Tightening the constraints, we can obtain a better energy bound. For instance, adding a 3-body element to the previous set we will obtain a higher energy.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>stronger_layout <span class="op">=</span> fill_layout([np.array([<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>]), np.array([<span class="dv">0</span>, N<span class="op">-</span><span class="dv">1</span>])], N)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>stronger_layout</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[array([1, 2, 3]), array([0, 5]), array([4])]</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>solver.solve(H.to_sdp(), stronger_layout)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>-12.472135949820899</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="cost-estimation" class="level2">
+<h2 class="anchored" data-anchor-id="cost-estimation">Cost estimation</h2>
+<p>A key element of any optimization problem is its computational cost. We can take any consistent measure of the problem’s cost as a valid estimation for the posterior optimization with the reinforcement learning framework. For example, since the actual complexity of solving an SdP depends on the algorithm that we use, we take the number of free parameters as a metric for the associated cost.</p>
+<p>In order to get a cost estimation, we rely on the <code>ojimetro</code> method.</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/bounce/blob/main/bounce/sdp.py#L61" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="sdpenergysolver.ojimetro" class="level3">
+<h3 class="anchored" data-anchor-id="sdpenergysolver.ojimetro">SdPEnergySolver.ojimetro</h3>
+<blockquote class="blockquote">
+<pre><code> SdPEnergySolver.ojimetro (layout)</code></pre>
+</blockquote>
+<p>Estimates the amount of free parameters involved in the SdP associated to the <code>layout</code>.</p>
+<p>Following our example, the first SdP was a wild relaxation of the original problem.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>solver.ojimetro(simple_layout)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>31</code></pre>
+</div>
+</div>
+<p>However, the second one was a tighter one.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>solver.ojimetro(stronger_layout)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>83</code></pre>
+</div>
+</div>
+<p>With the first set of constraints, the resulting SdP had 31 free variables to optimize, while the second SdP had to deal with 83. Tighter energy bounds usually come at the cost of higher computational costs.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> solver.ojimetro(simple_layout) <span class="op">&lt;</span> solver.ojimetro(stronger_layout)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="alternative-methods-to-lower-bound-the-ground-state-energy" class="level2">
+<h2 class="anchored" data-anchor-id="alternative-methods-to-lower-bound-the-ground-state-energy">Alternative methods to lower bound the ground state energy</h2>
+<p>We implement two other methods to obtain lower bounds of many-body Hamiltonians. We rewrite the Anderson bound <a href="https://journals.aps.org/pr/abstract/10.1103/PhysRev.83.1260">[2]</a> and the method introduced by Uskov and Lichovskiy in <a href="https://iopscience.iop.org/article/10.1088/1742-6596/1163/1/012057">[3]</a> in SdP form to compare with the proposed methodology above. The SdP formulation ensures that the obtained result is the actual global minimum.</p>
+<p>The main limitation of these methods is not taking into account compatibility constraints between the reduced density matrices spanning the system. Furthermore, they rely on symmetries (such as translational invariance) and can, thus, not be used to solve inhomogeneous systems. Conversely, the approach we introduced above can be nautrally complemented by introducing additional constratints stemming from any previously known symmetry from the system.</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/bounce/blob/main/bounce/sdp.py#L110" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="sdpenergyandersonsolver" class="level3">
+<h3 class="anchored" data-anchor-id="sdpenergyandersonsolver">SdPEnergyAndersonSolver</h3>
+<blockquote class="blockquote">
+<pre><code> SdPEnergyAndersonSolver (solver='cvxopt')</code></pre>
+</blockquote>
+<p>Solver to compute bounds to the ground state energy of local Hamiltonians implementing the methods described in [2] (see references below). Finds the so-called Anderson bound. Assumes the system is one-dimensional.</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/bounce/blob/main/bounce/sdp.py#L170" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="sdpenergyuskovlichkovskiysolver" class="level3">
+<h3 class="anchored" data-anchor-id="sdpenergyuskovlichkovskiysolver">SdPEnergyUskovLichkovskiySolver</h3>
+<blockquote class="blockquote">
+<pre><code> SdPEnergyUskovLichkovskiySolver (solver='cvxopt')</code></pre>
+</blockquote>
+<p>Solver to compute ground state energy bounds of local Hamiltonians. It follows the method introduced in [3] (see references below) to improve over the Anderson bound. The method assumes the reduced states have certain symmetries, such as translational invariance.</p>
+<p>We can quickly reproduce the results from <a href="https://iopscience.iop.org/article/10.1088/1742-6596/1163/1/012057">[3]</a> (see Table 2) by properly adjusting the cluster size and using the same Hamiltonian.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">8</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>chain <span class="op">=</span> Chain1D(N)</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>B, J <span class="op">=</span> <span class="dv">0</span>, <span class="dv">1</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>H <span class="op">=</span> XYZHamiltonian(chain, B, J)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>solver_anderson <span class="op">=</span> SdPEnergyAndersonSolver()</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>solver_uskov <span class="op">=</span> SdPEnergyUskovLichkovskiySolver()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>cluster_size <span class="op">=</span> <span class="dv">5</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>layout <span class="op">=</span> [np.sort(np.arange(i, i<span class="op">+</span>cluster_size)<span class="op">%</span>N) <span class="cf">for</span> i <span class="kw">in</span> np.arange(<span class="dv">0</span>, N, cluster_size<span class="op">-</span><span class="dv">3</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>solver_anderson.solve(H.to_sdp(), cluster_size)<span class="op">/</span>N, solver_uskov.solve(H.to_sdp(), cluster_size)<span class="op">/</span>N, solver.solve(H.to_sdp(), layout)<span class="op">/</span>N</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(-1.9278862525095595, -1.8685170845449277, -1.868517086761974)</code></pre>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="entanglement-witnessing" class="level1">
+<h1>Entanglement witnessing</h1>
+<p>We take an energy-based approach to build entanglement witnesses here. The main principle is, given a Hamiltonian, we compute the minimum possible energy obtainable within the set of separable states. Then, if we find a state that yields a lower energy, it means that it is entangled <a href="https://journals.aps.org/pra/abstract/10.1103/PhysRevA.71.010301">[4]</a>.</p>
+<p>Formally, <span class="math display">\[\Delta E = \langle H\rangle - E_{\text{sep}}\]</span> denotes the energy gap between the expected energy of a state, <span class="math inline">\(\langle H\rangle = \text{Tr}\left[\rho H\right]\)</span>, and the minimum energy obtainable by separable states, <span class="math inline">\(E_{\text{sep}}\)</span>. If <span class="math inline">\(\Delta E &lt; 0\)</span>, <span class="math inline">\(\rho\)</span> is an entangled state, as it is beyond the set of separable states. The larger the difference, <span class="math inline">\(|\Delta E|\)</span>, the more robust the entanglement. Actually, <span class="math inline">\(|\Delta E|\)</span> quantifies the energy the system must receive to become separable.</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/bounce/blob/main/bounce/sdp.py#L228" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="sdpwitnesssolver" class="level3">
+<h3 class="anchored" data-anchor-id="sdpwitnesssolver">SdPWitnessSolver</h3>
+<blockquote class="blockquote">
+<pre><code> SdPWitnessSolver (solver='cvxopt')</code></pre>
+</blockquote>
+<p>Solver to detect entanglement from energy bounds. It follows the formalism described in [1] to obtain a lower bound of the minimum energy for separable states. If we can find a state with a lower energy than that, the state is entangled.</p>
+<p>The <a href="https://BorjaRequena.github.io/bounce/source/sdp.html#sdpwitnesssolver"><code>SdPWitnessSolver</code></a> provides a lower bound for <span class="math inline">\(E_{\text{sep}}\)</span> given a <a href="https://BorjaRequena.github.io/bounce/source/hamiltonian.html#hamiltonian"><code>Hamiltonian</code></a>. We build upon the <a href="https://BorjaRequena.github.io/bounce/source/sdp.html#sdpenergysolver"><code>SdPEnergySolver</code></a> imposing additional constraints to enforce separability on our states. However, imposing such conditions to their full extent is extremely costly. Instead, we impose that our states are positive under partial transposition (PPT), which is a relaxation that is exact in the one-dimensional limit. Hence, the bound on <span class="math inline">\(E_{\text{sep}}\)</span>.</p>
+<p>Let’s see an example! First of all, we need to build our problem.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">6</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>chain <span class="op">=</span> Chain1D(N)</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>B, J <span class="op">=</span> <span class="dv">1</span>, <span class="dv">2</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>H <span class="op">=</span> XXHamiltonian(chain, B, J)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now we can instantiate our solver.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>solver_witness <span class="op">=</span> SdPWitnessSolver()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We define a layout of 2-body terms.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>layout <span class="op">=</span> fill_layout([np.sort([i, (i<span class="op">+</span><span class="dv">1</span>)<span class="op">%</span>N]) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(N)], N)</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>layout</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[array([0, 1]),
+ array([1, 2]),
+ array([2, 3]),
+ array([3, 4]),
+ array([4, 5]),
+ array([0, 5])]</code></pre>
+</div>
+</div>
+<p>And now we’re ready to solve it.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>solver_witness.solve(H.to_sdp(), layout)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>-12.749999991956518</code></pre>
+</div>
+</div>
+<p>In <a href="https://journals.aps.org/pra/abstract/10.1103/PhysRevA.71.010301">[4]</a> we find analytic expressions of <span class="math inline">\(E_{\text{sep}}\)</span> for some Hamiltonians, including the XX model we consider here.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> exact_XX_sep_bound(N, B, J, d):</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>    b <span class="op">=</span> B<span class="op">/</span>J<span class="op">/</span>d</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> b <span class="op">&lt;=</span> <span class="dv">2</span>:</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="op">-</span>d<span class="op">*</span>N<span class="op">*</span>J<span class="op">*</span>(<span class="dv">1</span><span class="op">+</span>b<span class="op">**</span><span class="dv">2</span><span class="op">/</span><span class="dv">4</span>)</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="op">-</span>d<span class="op">*</span>N<span class="op">*</span>J<span class="op">*</span>b</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>exact_XX_sep_bound(N, B, J, <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>-12.75</code></pre>
+</div>
+</div>
+<p>We see that, since we’ve chosen to implement the Hamiltonian in a one-dimensional chain, the result we obtained is exact. Now we can use the <a href="https://BorjaRequena.github.io/bounce/source/sdp.html#sdpenergysolver"><code>SdPEnergySolver</code></a> to obtain the ground state energy and compare it to the separable threshold.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>solver_energy <span class="op">=</span> SdPEnergySolver()</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>solver_energy.solve(H.to_sdp(), layout)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>-23.99999993375356</code></pre>
+</div>
+</div>
+<p>The ground state is entangled! :)</p>
+<p>If we now change the Hamiltonian parameters, we can land on a separable ground state.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>B, J <span class="op">=</span> <span class="dv">5</span>, <span class="dv">1</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>H <span class="op">=</span> XXHamiltonian(chain, B, J)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>solver_witness.solve(H.to_sdp(), layout), solver_energy.solve(H.to_sdp(), layout)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(-29.9999999937129, -29.999999800727085)</code></pre>
+</div>
+</div>
+<p>In this case, both energies match. This confirms that the ground state is, indeed, a separable state.</p>
+</section>
+</section>
+<section id="references" class="level1">
+<h1>References</h1>
+<p>[1] B. Requena, G. Muñoz-Gil, M. Lewenstein, V. Dunjko, J. Tura. <a href="https://journals.aps.org/prresearch/abstract/10.1103/PhysRevResearch.5.013097">Certificates of quantum many-body properties assisted by machine learning</a>. <em>Phys. Rev.&nbsp;Research</em> <strong>5</strong>, 013097 (2023)</p>
+<p>[2] P. W. Anderson. <a href="https://journals.aps.org/pr/abstract/10.1103/PhysRev.83.1260">Limits on the Energy of the Antiferromagnetic Ground State</a>. <em>Physical Review</em> <strong>83</strong>, 1260 (1951)</p>
+<p>[3] F. Uskov and O. Lychkovskiy. <a href="https://iopscience.iop.org/article/10.1088/1742-6596/1163/1/012057">A variational lower bound on the ground state of a many-body system and the squaring parametrization of density matrices</a>. <em>Journal of Physics: Conference Series</em> <strong>1163</strong> 012057 (2019)</p>
+<p>[4] G. Tóth. <a href="https://journals.aps.org/pra/abstract/10.1103/PhysRevA.71.010301">Entanglement Witnesses in Spin Models</a>. <em>Physical Review A</em> <strong>71</strong> 010301 (2005).</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
