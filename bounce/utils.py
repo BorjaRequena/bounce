@@ -10,7 +10,6 @@ __all__ = ['bench_dir', 'ckp_dir', 'agents_dir', 'plot_trainings', 'arrange_shap
 
 # %% ../nbs/source/04_utils.ipynb 1
 import numpy as np
-import torch
 import pickle
 import io
 import torch

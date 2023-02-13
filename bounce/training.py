@@ -18,8 +18,6 @@ from .utils import (T, array_in_list, state2str, load_checkpoint, save_model, lo
                           get_agent_file_name, get_checkpoint_file_name)
 
 import torch
-import torch.nn as nn
-import torch.optim as optim
 
 # %% ../nbs/source/03_training.ipynb 5
 class DQNTrainer:
