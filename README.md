@@ -42,6 +42,25 @@ with `pip install -e bounce`.
 
 When using this library, please cite us!
 
+It is very important for us to cite our original work:
+
+    @article{Requena2023PRR,
+      title     = {Certificates of quantum many-body properties assisted by machine learning},
+      author    = {Requena, Borja and Mu\~noz-Gil, Gorka and Lewenstein, Maciej and Dunjko, Vedran and Tura, Jordi},
+      journal   = {Phys. Rev. Res.},
+      volume    = {5},
+      issue     = {1},
+      pages     = {013097},
+      numpages  = {26},
+      year      = {2023},
+      month     = {Feb},
+      publisher = {American Physical Society},
+      doi       = {10.1103/PhysRevResearch.5.013097},
+      url       = {https://link.aps.org/doi/10.1103/PhysRevResearch.5.013097}
+    }
+
+along this repository:
+
     @Software{Requena2021Zenodo,
       author    = {Requena, Borja and Muñoz-Gil, Gorka and Tura, Jordi},
       doi       = {10.5281/zenodo.4585623},
@@ -50,15 +69,4 @@ When using this library, please cite us!
       title     = {BorjaRequena/BOUNCE},
       url       = {https://doi.org/10.5281/zenodo.4585623},
       year      = {2021},
-    }
-
-You may also consider citing the original work (which is actually more
-important for us)
-
-    @misc{Requena2021arxiv,
-      title        = {{Certificates of quantum many-body properties assisted by machine learning}},
-      author       = {Requena, Borja and Mu{\ifmmode\tilde{n}\else\~{n}\fi}oz-Gil, Gorka and Lewenstein, Maciej and Dunjko, Vedran and Tura, Jordi},
-      year         = 2021,
-      url          = {https://arxiv.org/abs/2103.03830v1},
-      eprint       = {2103.03830}
     }
