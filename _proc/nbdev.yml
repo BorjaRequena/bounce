@@ -1,9 +1,0 @@
-project:
-  output-dir: _docs
-
-website:
-  title: "bounce"
-  site-url: "https://BorjaRequena.github.io/bounce"
-  description: "Easy optimal relaxations for your hard optimization problems"
-  repo-branch: main
-  repo-url: "https://github.com/BorjaRequena/bounce"
