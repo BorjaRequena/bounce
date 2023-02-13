@@ -79,7 +79,7 @@ class SdPEnergySolver(SdPSolver):
                 common, _, idx = np.intersect1d(support, sites, return_indices=True)
                 if len(common) == len(support): 
                     rdm = rho.partial_trace(self._complementary_system(idx, len(sites)))
-                    objective += (rdm | h) # Tr(rdm·H')
+                    objective += (rdm | h) # Tr(rdm H')
                     supported = True
                     break
             if not supported:
@@ -145,7 +145,7 @@ class SdPEnergyAndersonSolver(SdPEnergySolver):
             common, _, idx = np.intersect1d(support, sites, return_indices=True)
             if len(common) == len(support): 
                 rdm = rho.partial_trace(self._complementary_system(idx, len(sites)))
-                objective += (rdm | h) # Tr(rdm·H')
+                objective += (rdm | h) # Tr(rdm H')
         return objective
         
     def _get_clusters(self, interactions, cluster_size):
